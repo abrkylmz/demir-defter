@@ -5,7 +5,10 @@ import { dayMonth, longDate, mondayOf, todayStr } from '../lib/date.js';
 import { esc } from '../lib/dom.js';
 import { fmt } from '../lib/format.js';
 import { store } from '../state/store.js';
-import { tileIcon } from '../ui/icons.js';
+import { isEmpty, summarize } from '../services/backup.js';
+import { canOfferInstall } from '../services/install.js';
+import { backupStatus } from '../sheets/data.js';
+import { tileIcon, utilIcon } from '../ui/icons.js';
 
 function greeting(hour) {
   if (hour < 5) return 'İyi geceler';
@@ -54,5 +57,23 @@ export function renderHome() {
     <button class="tile" style="--c:var(--yellow)" data-tab="history">${tileIcon('history')}<div><h2>Geçmiş</h2><p>${histTxt}</p></div></button>
     <button class="tile" style="--c:var(--green)" data-tab="progress">${tileIcon('progress')}<div><h2>İlerleme</h2><p>${progTxt}</p></div></button>
     <button class="tile wide" style="--c:var(--red)" data-tab="body">${tileIcon('body')}<div><h2>Kilo</h2><p>${bodyTxt}</p></div><span class="go" aria-hidden="true">›</span></button>
-  </div>`;
+  </div>
+  ${utilityLinks()}`;
+}
+
+/** Ana ekranın altındaki kurulum ve yedekleme satırları. */
+function utilityLinks() {
+  const rows = [];
+  if (canOfferInstall())
+    rows.push(
+      `<button class="util" data-act="install">${utilIcon('install')}<span><b>Uygulamayı yükle</b><span>Ana ekrandan aç, internetsiz de çalışsın</span></span></button>`,
+    );
+  const status = backupStatus();
+  const sub = isEmpty(summarize())
+    ? 'Başka bir cihazdan yedeğini yükle'
+    : `<span class="${status.stale ? 'warn' : ''}">${status.text}</span>`;
+  rows.push(
+    `<button class="util" data-act="data">${utilIcon('backup')}<span><b>Yedekleme ve veriler</b><span>${sub}</span></span></button>`,
+  );
+  return `<div class="utils">${rows.join('')}</div>`;
 }

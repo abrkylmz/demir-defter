@@ -113,3 +113,55 @@ body.home .app {
   background: transparent;
   padding: 0;
 }
+
+/* Ana ekran alt satırları: kurulum ve yedekleme */
+.utils {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.util {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 60px;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 10px 16px;
+}
+.util:hover {
+  border-color: var(--ink-3);
+}
+.util svg {
+  flex: none;
+  color: var(--ink-2);
+}
+.util b {
+  display: block;
+  font-weight: 600;
+}
+.util b + span {
+  display: block;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.util .warn {
+  color: var(--red);
+  font-weight: 600;
+}
+.steps {
+  margin: 14px 0 0;
+  padding-left: 22px;
+  line-height: 1.5;
+}
+.steps li {
+  margin-bottom: 8px;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

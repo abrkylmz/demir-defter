@@ -5,7 +5,7 @@ import { sortedDates } from '../domain/workout.js';
 import { todayStr } from '../lib/date.js';
 import { store } from '../state/store.js';
 import { toast } from '../ui/toast.js';
-import { cloud } from './db.js';
+import { saveFile } from './files.js';
 
 const BOM = String.fromCharCode(0xfeff);
 const round1 = n => Math.round(n * 10) / 10;
@@ -51,11 +51,11 @@ export function buildCsv() {
   return BOM + rows.map(r => r.map(csvCell).join(',')).join('\n');
 }
 
+/** Excel/Sheets için CSV indirir. */
 export async function exportCsv() {
-  if (!cloud.downloads) return;
   try {
-    await cloud.downloads.save({ filename: `demir-defter-${todayStr()}.csv`, data: buildCsv() });
-  } catch (err) {
-    if (err && err.code !== 'declined') toast('Dosya şu an indirilemiyor');
+    await saveFile(`demir-defter-${todayStr()}.csv`, buildCsv(), 'text/csv;charset=utf-8');
+  } catch {
+    toast('Dosya şu an indirilemiyor');
   }
 }

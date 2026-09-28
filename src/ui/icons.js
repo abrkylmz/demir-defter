@@ -48,5 +48,14 @@ const ICON_PATHS = {
   ],
 };
 
+const UTIL_PATHS = {
+  install: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3M10 18.5h4"/>',
+  backup:
+    '<path d="M12 3l7.5 3v5.5c0 4.4-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5.1-7.5-9.5V6z"/><path d="M12 8v6M9 11l3 3 3-3"/>',
+};
+
+/** Ana ekran alt satır ikonları. */
+export const utilIcon = name => tabIcon(24, 2, UTIL_PATHS[name]);
+
 /** Ana ekran kutusu ikonları. */
 export const tileIcon = (name, size = 30) => tabIcon(size, 2.2, ICON_PATHS[name][0], ICON_PATHS[name][1]);

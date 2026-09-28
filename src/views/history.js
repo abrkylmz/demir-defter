@@ -2,7 +2,6 @@ import { GROUPS, OTHER_GROUP } from '../data/exercises.js';
 import { groupSets, sortedDates } from '../domain/workout.js';
 import { addDays, mondayOf, monthYear, parseYmd, todayStr, weekdayShort } from '../lib/date.js';
 import { esc } from '../lib/dom.js';
-import { cloud } from '../services/db.js';
 import { store } from '../state/store.js';
 
 /** Üst üste antrenman yapılan hafta sayısı (bu hafta henüz boşsa geçen haftadan sayar). */
@@ -46,8 +45,7 @@ export function renderHistory() {
       <div class="hbody"><div class="names">${esc(names.join(', '))}</div><div class="meta">${names.length} hareket</div>${s.note ? `<div class="meta">“${esc(truncate(s.note, 70))}”</div>` : ''}</div></button>`;
   });
 
-  if (cloud.downloads)
-    html += `<div class="toolbar"><span style="color:var(--ink-3);font-size:13.5px">Tüm kayıtların tek dosyada</span><button class="btn" data-act="export">CSV olarak indir</button></div>`;
+  html += `<div class="toolbar"><span style="color:var(--ink-3);font-size:13.5px">Tüm kayıtların tek dosyada</span><button class="btn" data-act="export">CSV olarak indir</button></div>`;
   return html;
 }
 

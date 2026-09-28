@@ -6,7 +6,9 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 
 - Vite + vanilla JS (ES modülleri). Framework yok, çalışma zamanı bağımlılığı yok. Dev araçları: Vite, Vitest, ESLint, Prettier.
 - Yayın: GitHub → Vercel (statik, `dist/`). Ayarlar ve güvenlik başlıkları `vercel.json`'da.
-- Fontlar Google Fonts'tan geliyor (Barlow, Barlow Condensed). Başka dış kaynak yok. Yeni dış kaynak eklenirse `vercel.json`'daki CSP'ye de ekle.
+- Fontlar `@fontsource` ile paketleniyor (`styles/fonts.css`; Barlow, Barlow Condensed). Hiç dış kaynak yok; CSP `'self'` ile sınırlı. Yeni dış kaynak eklenirse `vercel.json`'daki CSP'ye de ekle.
+- PWA: `vite-plugin-pwa` (vite.config.js). Manifest, ikonlar (`public/`), çevrimdışı önbellek ve `?tab=` kısayolları (`main.js`). Kurulum düğmesi `services/install.js`.
+- Yedekleme: `services/backup.js` (JSON al/doğrula/geri yükle), `sheets/data.js` paneli, `services/files.js` (indirme). Yedek dosyası güvenilmezdir; yeni alan eklersen `parseBackup` temizleyicisine de ekle ve `tests/backup.test.js`'i güncelle.
 - Komutlar: `npm run dev` (localhost:8000), `npm run build`, `npm test`, `npm run check` (lint + format + test + build).
 - Git Bash'te `vitest` "failed to find the runner" hatası verebilir (MSYS yolu). Testleri PowerShell'den çalıştır.
 

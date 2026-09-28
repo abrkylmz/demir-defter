@@ -35,6 +35,17 @@ export const dayMonth = s => tr(s, { day: 'numeric', month: 'long' });
 export const weekdayLong = s => tr(s, { weekday: 'long' });
 export const weekdayShort = s => tr(s, { weekday: 'short' });
 
+/** İki tarih arasındaki gün farkı (b - a). */
+export const daysBetween = (a, b) => Math.round((parseYmd(b) - parseYmd(a)) / 86400000);
+
+/** "bugün", "dün", "5 gün önce" */
+export function daysAgoText(date) {
+  const n = daysBetween(date, todayStr());
+  if (n <= 0) return 'bugün';
+  if (n === 1) return 'dün';
+  return `${n} gün önce`;
+}
+
 /** "Bugün", "Dün" ya da "12 Mart". */
 export function relativeDayTitle(date) {
   const t = todayStr();

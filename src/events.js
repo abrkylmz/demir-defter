@@ -10,7 +10,9 @@ import { prefersReducedMotion } from './lib/dom.js';
 import { fmt } from './lib/format.js';
 import { exportCsv } from './services/export.js';
 import { persistFood, persistSession } from './services/persist.js';
+import { promptInstall } from './services/install.js';
 import { openBodySheet } from './sheets/body-weight.js';
+import { openDataSheet, openInstallHelp } from './sheets/data.js';
 import { openExerciseMenu } from './sheets/exercise-menu.js';
 import { openPicker } from './sheets/exercise-picker.js';
 import { openAmountSheet } from './sheets/food-amount.js';
@@ -105,9 +107,14 @@ const ACTIONS = {
     );
   },
 
-  // kilo ve dışa aktarma
+  // kilo, veriler ve kurulum
   bw: b => openBodySheet(b.dataset.date),
   export: () => exportCsv(),
+  data: () => openDataSheet(),
+  install: async () => {
+    if (!(await promptInstall())) openInstallHelp();
+    render();
+  },
 };
 
 function selectDay(d) {
