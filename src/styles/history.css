@@ -1,0 +1,157 @@
+/* Geçmiş, özet kutuları ve haftalık kas grubu kartı */
+.month {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 20px;
+  margin: 26px 0 8px;
+  color: var(--ink-2);
+}
+.hrow {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.hrow:hover {
+  border-color: var(--ink-3);
+}
+.hdate {
+  text-align: center;
+  line-height: 1;
+}
+.hdate .d {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 800;
+}
+.hdate .w {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 3px;
+}
+.hbody .names {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.hbody .meta {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0 4px;
+}
+.summary div {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+.summary b {
+  display: block;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.05;
+}
+.summary span {
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.mcard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 12px 14px 14px;
+  margin: 10px 0 4px;
+}
+.mcard h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 21px;
+}
+.mcard .sub {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+.mrows {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.mrows li {
+  display: grid;
+  grid-template-columns: 58px 1fr 56px;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+.mrows .mg {
+  font-weight: 600;
+}
+.mrows li.zero .mg {
+  color: var(--ink-3);
+}
+.mtrack {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--surface-2);
+}
+.mtrack i {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+  background: var(--accent);
+}
+.mtrack .pv {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ink-2);
+}
+.mrows .mn {
+  text-align: right;
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.mrows .mn small {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+.mcard .miss {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin: 12px 0 0;
+}

@@ -1,0 +1,284 @@
+/* Antrenman: hareket kartı, setler, notlar, şablonlar */
+.ex {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 14px 12px;
+  margin-bottom: 12px;
+}
+.exhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.extoggle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 4px 2px;
+  margin: -4px 0;
+  border-radius: 10px;
+  min-height: 44px;
+}
+.extoggle .chev {
+  flex: none;
+  color: var(--ink-3);
+  transition: transform 0.2s;
+}
+.ex.open .extoggle .chev {
+  transform: rotate(90deg);
+}
+.ex:not(.open) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.extoggle .cnt {
+  margin-left: auto;
+  font-size: 13.5px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.exhead h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1.1;
+}
+.exhead .grp {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+.last {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin: 10px 0 4px;
+}
+.last b {
+  font-weight: 600;
+}
+.sets {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.set {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 7px 4px;
+  border-radius: 10px;
+  border-top: 1px solid var(--line);
+}
+.sets li:first-child .set {
+  border-top: 0;
+}
+.set:hover {
+  background: var(--surface-2);
+}
+.set .n {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.set .w {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.set .w small {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.set .w .x {
+  color: var(--ink-3);
+  font-weight: 500;
+  font-size: 18px;
+}
+.set .rm {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  text-align: right;
+  white-space: nowrap;
+}
+.set .rm .star {
+  color: var(--pr);
+  font-weight: 700;
+}
+.exactions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.addex {
+  width: 100%;
+  min-height: 58px;
+  border: 2px dashed var(--line);
+  background: transparent;
+  border-radius: 18px;
+  font-family: var(--display);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.addex:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.empty {
+  padding: 30px 10px 20px;
+  text-align: center;
+  color: var(--ink-2);
+}
+.empty svg {
+  margin-bottom: 6px;
+}
+.empty p {
+  margin: 4px 0 18px;
+}
+
+textarea.notein {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 16px;
+  line-height: 1.4;
+  resize: vertical;
+  min-height: 110px;
+}
+textarea.notein:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.noteline {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+}
+.noteline:hover {
+  border-color: var(--ink-3);
+}
+.noteline .l {
+  flex: none;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.noteline .t,
+.exnote {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.noteline .t {
+  font-size: 15px;
+}
+.exnote {
+  font-size: 14px;
+  border-left: 3px solid var(--ink-3);
+  padding: 2px 0 2px 10px;
+  margin: 8px 0 2px;
+}
+.logtools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.tpl {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+}
+.tpl li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-top: 1px solid var(--line);
+}
+.tpl li:first-child {
+  border-top: 0;
+}
+.tpl .go {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 10px 4px;
+  border-radius: 10px;
+  min-height: 44px;
+}
+.tpl .go:hover {
+  background: var(--surface-2);
+}
+.tpl .pn {
+  display: block;
+  font-weight: 600;
+}
+.tpl .tx {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tdel {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 10px;
+  padding: 0 8px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+.tdel:hover {
+  background: var(--surface-2);
+}
+.tdel.confirm {
+  color: var(--red);
+}

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ECEEEA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121815" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="description"
+      content="Antrenman, beslenme ve kilo takibi. Setlerini, kalorini ve tartılarını tek yerde tut."
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Demir Defter" />
+    <title>Demir Defter</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header class="top">
+        <button class="brand brandbtn" data-tab="home" aria-label="Ana ekrana dön">
+          <svg width="30" height="22" viewBox="0 0 30 22" aria-hidden="true">
+            <rect x="0" y="9.5" width="30" height="3" rx="1.5" fill="var(--bar)" />
+            <rect x="4" y="2" width="4" height="18" rx="1.5" fill="var(--red)" />
+            <rect x="8.5" y="4" width="3" height="14" rx="1.2" fill="var(--blue)" />
+            <rect x="22" y="2" width="4" height="18" rx="1.5" fill="var(--red)" />
+            <rect x="18.5" y="4" width="3" height="14" rx="1.2" fill="var(--blue)" />
+          </svg>
+          Demir Defter
+        </button>
+        <div id="hdrRight">
+          <div class="sync" id="sync">Bu tarayıcıda kayıtlı</div>
+          <button class="homebtn" data-tab="home" id="homeBtn" hidden>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 11l9-7 9 7" />
+              <path d="M5.5 9.5V20h13V9.5" />
+            </svg>
+            Ana ekran
+          </button>
+        </div>
+      </header>
+      <main id="view"></main>
+    </div>
+
+    <nav class="tabs" aria-label="Bölümler">
+      <div class="in">
+        <button data-tab="log" aria-current="page">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M2 12h20" />
+            <rect x="4.5" y="7" width="3" height="10" rx="1" />
+            <rect x="16.5" y="7" width="3" height="10" rx="1" />
+          </svg>
+          Antrenman
+        </button>
+        <button data-tab="food">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10" />
+            <path d="M17 21V3c-2.2 1.2-3.5 3.8-3.5 7v3H17" />
+          </svg>
+          Beslenme
+        </button>
+        <button data-tab="history">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+            <path d="M3.5 10h17M8 3v4M16 3v4" />
+          </svg>
+          Geçmiş
+        </button>
+        <button data-tab="progress">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M3 19l6-6 4 4 8-9" />
+            <path d="M15 8h6v6" />
+          </svg>
+          İlerleme
+        </button>
+        <button data-tab="body">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3.5" y="4" width="17" height="16" rx="4" />
+            <path d="M8.5 9.5a5 5 0 0 1 7 0" />
+            <path d="M12 11.5l1.5-2.5" />
+          </svg>
+          Kilo
+        </button>
+      </div>
+    </nav>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="scrim" class="scrim" hidden></div>
+    <div id="sheet" class="sheet" role="dialog" aria-modal="true" hidden></div>
+
+    <noscript>Demir Defter'i kullanmak için JavaScript'i etkinleştir.</noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

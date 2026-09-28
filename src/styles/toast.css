@@ -1,0 +1,30 @@
+/* Bildirim */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(10px);
+  opacity: 0;
+  z-index: 60;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+  pointer-events: none;
+  width: max-content;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.pr {
+  border-color: var(--pr);
+}

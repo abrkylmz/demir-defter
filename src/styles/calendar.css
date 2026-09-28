@@ -1,0 +1,228 @@
+/* Hafta şeridi ve gün başlığı */
+.weekhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0 8px;
+}
+.weekhead h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--ink-2);
+}
+.iconbtn {
+  border: 0;
+  background: transparent;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+}
+.iconbtn:hover {
+  background: var(--surface-2);
+}
+.textbtn {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.textbtn:hover {
+  background: var(--accent-soft);
+}
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.day {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 7px 0 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-height: 64px;
+}
+.day .dn {
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.day .dd {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.day .dots {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+}
+.day .dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.day.today {
+  border-color: var(--ink-2);
+}
+.day.sel {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.day.sel .dn {
+  color: var(--bg);
+  opacity: 0.7;
+}
+.day.sel .dots i {
+  background: var(--bg);
+}
+.day .kc {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 17px;
+  border-radius: 6px;
+  padding: 0 4px;
+  margin-top: 3px;
+  min-height: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.day .kc.ok {
+  background: var(--green);
+  color: #fff;
+}
+.day .kc.miss {
+  background: var(--red);
+  color: #fff;
+}
+.day .kc.pending,
+.day .kc.none {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.day .kc.empty {
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.day.sel {
+  outline: 3px solid var(--orange);
+  outline-offset: 1px;
+}
+.openday {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 14px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--display);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.openday:hover {
+  border-color: var(--orange);
+}
+.openday .chev {
+  width: 20px;
+  height: 20px;
+  color: var(--orange);
+  transition: transform 0.18s ease;
+  animation: nudge 1.8s ease-in-out infinite;
+}
+.openday.turn .chev {
+  transform: rotate(180deg);
+  animation: none;
+}
+@keyframes nudge {
+  0%,
+  70%,
+  100% {
+    translate: 0 0;
+  }
+  80% {
+    translate: 0 3px;
+  }
+  90% {
+    translate: 0 0;
+  }
+}
+.closeday {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.closeday .chev {
+  transform: rotate(180deg);
+}
+.fooddetail.drop {
+  animation: dropdown 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: top center;
+}
+@keyframes dropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+.legendrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin: 12px 2px 4px;
+}
+.legendrow i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  vertical-align: -1px;
+  margin-right: 6px;
+}
+
+.dayline {
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dayline h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 36px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.dayline p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 15px;
+}

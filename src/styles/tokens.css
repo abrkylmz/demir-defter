@@ -1,0 +1,61 @@
+/* Renk ve tipografi token'ları. Yeni renk eklerken açık ve koyu temaya birlikte ekle. */
+:root {
+  --bg: #eceeea;
+  --surface: #f9faf7;
+  --surface-2: #e1e5df;
+  --ink: #16201b;
+  --ink-2: #56615b;
+  --ink-3: #86908a;
+  --line: #cfd5ce;
+  --red: #d2312d;
+  --blue: #1f55a6;
+  --yellow: #ebb21b;
+  --green: #2c8a4c;
+  --wplate: #f4f4f0;
+  --chrome: #a9b0ac;
+  --bar: #7c8580;
+  --orange: #d2691a;
+  --accent: #1f55a6;
+  --accent-soft: #dce6f5;
+  --on-accent: #fff;
+  --pr: #c98a00;
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --body: 'Barlow', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #121815;
+    --surface: #1a221e;
+    --surface-2: #242e29;
+    --ink: #e8ede9;
+    --ink-2: #a0aca6;
+    --ink-3: #6f7b75;
+    --line: #2e3933;
+    --wplate: #e6e6e0;
+    --bar: #8e9892;
+    --orange: #f0913a;
+    --accent: #5b8ee0;
+    --accent-soft: #1f2d45;
+    --on-accent: #0d1420;
+    --pr: #f0b53a;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #121815;
+  --surface: #1a221e;
+  --surface-2: #242e29;
+  --ink: #e8ede9;
+  --ink-2: #a0aca6;
+  --ink-3: #6f7b75;
+  --line: #2e3933;
+  --wplate: #e6e6e0;
+  --bar: #8e9892;
+  --orange: #f0913a;
+  --accent: #5b8ee0;
+  --accent-soft: #1f2d45;
+  --on-accent: #0d1420;
+  --pr: #f0b53a;
+}

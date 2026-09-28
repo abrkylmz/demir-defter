@@ -1,0 +1,63 @@
+/* Vücut ağırlığı */
+
+.bwline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+}
+.bwline:hover {
+  border-color: var(--ink-3);
+}
+.bwline .l {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.bwline .v {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+}
+.bwline .add {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 15px;
+}
+.bighero {
+  margin: 6px 0 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.bighero b {
+  font-family: var(--display);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.bighero span {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.up,
+.down {
+  color: inherit;
+}
+input.date {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 16px;
+  width: 100%;
+}

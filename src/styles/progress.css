@@ -1,0 +1,49 @@
+/* İlerleme grafiği ve liste */
+.chartcard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 12px 8px;
+  margin: 10px 0;
+}
+.chartcard svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.legend {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--ink-2);
+  padding: 0 4px 6px;
+}
+.legend i {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.plist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.plist li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 2px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+.plist li:first-child {
+  border-top: 0;
+}
+.plist .r {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 19px;
+}
