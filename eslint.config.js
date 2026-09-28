@@ -1,9 +1,11 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-export default [
-  { ignores: ['dist/', 'node_modules/', 'coverage/'] },
+export default tseslint.config(
+  { ignores: ['dist/', 'node_modules/', 'coverage/', 'dev-dist/'] },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     languageOptions: {
       ecmaVersion: 2022,
@@ -11,13 +13,20 @@ export default [
       globals: { ...globals.browser },
     },
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrors: 'none' }],
+      // tsc (noUnusedLocals) ile aynı kural; _ ile başlayanlar serbest
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrors: 'none' }],
+      '@typescript-eslint/consistent-type-imports': 'error',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
       'prefer-const': 'error',
     },
   },
   {
-    files: ['tests/**', '*.config.js'],
+    // Tip tanım dosyası global arayüzleri genişletiyor
+    files: ['**/*.d.ts'],
+    rules: { '@typescript-eslint/no-unused-vars': 'off' },
+  },
+  {
+    files: ['tests/**', '*.config.*'],
     languageOptions: { globals: { ...globals.node } },
   },
-];
+);

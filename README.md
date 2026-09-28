@@ -11,13 +11,13 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli, Türkçe arayüzlü
 
 ## Teknoloji
 
-|        |                                        |
-| ------ | -------------------------------------- |
-| Dil    | Vanilla JavaScript (ES modülleri), CSS |
-| Build  | [Vite](https://vite.dev)               |
-| Test   | [Vitest](https://vitest.dev)           |
-| Kalite | ESLint, Prettier                       |
-| Yayın  | [Vercel](https://vercel.com) (statik)  |
+|        |                                       |
+| ------ | ------------------------------------- |
+| Dil    | TypeScript (strict), CSS              |
+| Build  | [Vite](https://vite.dev)              |
+| Test   | [Vitest](https://vitest.dev)          |
+| Kalite | ESLint, Prettier                      |
+| Yayın  | [Vercel](https://vercel.com) (statik) |
 
 Çalışma zamanında hiçbir npm bağımlılığı yoktur. Build çıktısı yalnızca HTML, CSS ve JS dosyalarından oluşur.
 
@@ -30,15 +30,16 @@ npm install
 npm run dev        # http://localhost:8000
 ```
 
-| Komut             | Ne yapar                                              |
-| ----------------- | ----------------------------------------------------- |
-| `npm run dev`     | Geliştirme sunucusu (anında yenileme)                 |
-| `npm run build`   | `dist/` klasörüne production build                    |
-| `npm run preview` | Build çıktısını yerelde sunar                         |
-| `npm test`        | Birim testleri                                        |
-| `npm run lint`    | ESLint                                                |
-| `npm run format`  | Prettier ile biçimlendirme                            |
-| `npm run check`   | Lint + format kontrolü + test + build (commit öncesi) |
+| Komut               | Ne yapar                                                    |
+| ------------------- | ----------------------------------------------------------- |
+| `npm run dev`       | Geliştirme sunucusu (anında yenileme)                       |
+| `npm run build`     | `dist/` klasörüne production build                          |
+| `npm run preview`   | Build çıktısını yerelde sunar                               |
+| `npm test`          | Birim testleri                                              |
+| `npm run lint`      | ESLint (typescript-eslint)                                  |
+| `npm run typecheck` | TypeScript tip kontrolü                                     |
+| `npm run format`    | Prettier ile biçimlendirme                                  |
+| `npm run check`     | Lint + tip + format kontrolü + test + build (commit öncesi) |
 
 ## Proje yapısı
 
@@ -46,8 +47,10 @@ npm run dev        # http://localhost:8000
 index.html              Uygulama kabuğu (başlık, sekme çubuğu, panel kapları)
 public/                 Olduğu gibi kopyalanan dosyalar (favicon)
 src/
-  main.js               Giriş noktası
-  events.js             Tek click dinleyicisi; data-act / data-tab / data-date yönlendirmesi
+  main.ts               Giriş noktası
+  types.ts              Veri modeli tipleri (Store, Session, FoodItem…)
+  env.d.ts              Standart olmayan tarayıcı/platform API tipleri
+  events.ts             Tek click dinleyicisi; data-act / data-tab / data-date yönlendirmesi
   data/                 Sabit veriler: hareket kütüphanesi, besin tablosu
   lib/                  Saf yardımcılar: tarih, biçimlendirme, fitness hesapları
   state/                store (kalıcı veri) ve ui (geçici arayüz durumu)
@@ -63,6 +66,10 @@ tests/                  Vitest birim testleri
 
 Veri akışı tek yönlüdür: bir olay `store`'u değiştirir → `persist*` ile kaydedilir → `render()` aktif ekranı yeniden çizer.
 
+## Sürekli entegrasyon
+
+Her push ve pull request'te GitHub Actions (`.github/workflows/ci.yml`) lint, tip kontrolü, biçim kontrolü, test ve build çalıştırır. Dependabot bağımlılık güncellemelerini aylık PR olarak açar.
+
 ## Veri ve depolama
 
 Veriler tarayıcının `localStorage`'ında `demirdefter.v1` anahtarıyla tutulur. Bu yüzden:
@@ -71,15 +78,15 @@ Veriler tarayıcının `localStorage`'ında `demirdefter.v1` anahtarıyla tutulu
 - Tarayıcı verisini silmek kayıtları da siler. Ana ekrandaki **Yedekleme ve veriler** ile JSON yedek alınıp başka cihazda geri yüklenebilir; son yedek 14 günden eskiyse uyarı gösterilir.
 - Yedekleme paneli açıldığında tarayıcıdan verileri kalıcı saklaması istenir (`navigator.storage.persist`).
 
-Yedek biçimi: `{app: "demir-defter", version: 1, exportedAt, data: {sessions, custom, templates, body, food, foodCustom, goals}}`. Geri yüklemede dosya güvenilmez kabul edilir ve `src/services/backup.js` içinde alan alan doğrulanır.
+Yedek biçimi: `{app: "demir-defter", version: 1, exportedAt, data: {sessions, custom, templates, body, food, foodCustom, goals}}`. Geri yüklemede dosya güvenilmez kabul edilir ve `src/services/backup.ts` içinde alan alan doğrulanır.
 
 ## PWA
 
 `vite-plugin-pwa` (Workbox) build sırasında `sw.js` ve `manifest.webmanifest` üretir. Tüm uygulama dosyaları ve fontlar önbelleğe alınır; ilk ziyaretten sonra internet olmadan çalışır. Yeni sürüm arka planda iner ve bir sonraki açılışta devreye girer. Fontlar `@fontsource` ile uygulamanın içinden sunulur, dış sunucuya istek gitmez. İkonlar `public/` altındadır.
 
-Uygulama claude.ai'da artifact olarak çalıştırıldığında `window.claude` API'si üzerinden hesaba bağlı bulut depolamayı otomatik olarak kullanır (`src/services/sync.js`). Bu API başka hiçbir yerde yoktur.
+Uygulama claude.ai'da artifact olarak çalıştırıldığında `window.claude` API'si üzerinden hesaba bağlı bulut depolamayı otomatik olarak kullanır (`src/services/sync.ts`). Bu API başka hiçbir yerde yoktur.
 
-Cihazlar arası senkron istenirse yalnızca `src/services/db.js` ve `src/services/sync.js` bir bulut servisiyle (Supabase, Firebase vb.) değiştirilir. Geri kalan kod `store` ve `persist*` fonksiyonlarını kullandığı için etkilenmez.
+Cihazlar arası senkron istenirse yalnızca `src/services/db.ts` ve `src/services/sync.ts` bir bulut servisiyle (Supabase, Firebase vb.) değiştirilir. Geri kalan kod `store` ve `persist*` fonksiyonlarını kullandığı için etkilenmez.
 
 ## Yayına alma (GitHub + Vercel)
 
