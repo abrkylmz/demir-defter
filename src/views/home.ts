@@ -1,6 +1,8 @@
 import { latestWeight } from '../domain/body.ts';
 import { dayTotals } from '../domain/nutrition.ts';
+import { weekProgress, type WeekProgress } from '../domain/weekly.ts';
 import { loggedNames, sortedDates } from '../domain/workout.ts';
+import { greeting } from '../lib/greeting.ts';
 import { dayMonth, longDate, mondayOf, todayStr } from '../lib/date.ts';
 import { esc } from '../lib/dom.ts';
 import { fmt } from '../lib/format.ts';
@@ -10,11 +12,43 @@ import { canOfferInstall } from '../services/install.ts';
 import { backupStatus } from '../sheets/data.ts';
 import { tileIcon, utilIcon } from '../ui/icons.ts';
 
-function greeting(hour: number): string {
-  if (hour < 5) return 'İyi geceler';
-  if (hour < 12) return 'Günaydın';
-  if (hour < 18) return 'İyi günler';
-  return 'İyi akşamlar';
+/** Haftalık hedef halkası (kahraman kartında). */
+function goalRing(done: number, goal: number): string {
+  const R = 30;
+  const C = 2 * Math.PI * R;
+  const frac = Math.min(1, done / goal);
+  return `<svg class="hero-ring" width="76" height="76" viewBox="0 0 76 76" aria-hidden="true">
+    <circle cx="38" cy="38" r="${R}" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="8"/>
+    ${frac > 0 ? `<circle cx="38" cy="38" r="${R}" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(C * frac).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 38 38)"/>` : ''}
+  </svg><span class="hero-ring-txt"><b>${done}</b>/${goal}</span>`;
+}
+
+/** Haftalık durum cümlesi: kalan antrenman, gün ve seri. */
+function weekLine(p: WeekProgress): string {
+  const left = p.goal - p.done;
+  const main =
+    left <= 0
+      ? 'Haftalık hedefin tamam, harika gidiyorsun'
+      : left > p.daysLeft
+        ? `Bu hafta ${p.done} antrenman; yeni hafta yeni başlangıç`
+        : `Hedefe ${left} antrenman kaldı, ${p.daysLeft === 1 ? 'bugün son gün' : `${p.daysLeft} gün var`}`;
+  return p.streak >= 2 ? `${main} · ${p.streak} haftadır hedefte` : main;
+}
+
+function hero(t: string): string {
+  const name = store.profile.name;
+  const p = weekProgress(t);
+  return `<section class="hero" aria-label="Özet">
+    <div class="hero-top">
+      <div class="hero-text">
+        <p class="hero-date">${esc(longDate(t))}</p>
+        <h1>${esc(greeting(new Date().getHours(), name))}</h1>
+      </div>
+      <button class="hero-goal" data-act="profile" aria-label="Haftalık hedef: ${p.done} / ${p.goal} antrenman. Profili düzenle">${goalRing(p.done, p.goal)}</button>
+    </div>
+    <p class="hero-sub">${esc(weekLine(p))}</p>
+    ${name ? '' : '<button class="hero-cta" data-act="profile">Adını ve haftalık hedefini ekle</button>'}
+  </section>`;
 }
 
 export function renderHome(): string {
@@ -50,7 +84,7 @@ export function renderHome(): string {
   const w = latestWeight();
   const bodyTxt = w !== null ? `Son tartı ${fmt(w, 1)} kg` : 'Tartılarını kaydet';
 
-  return `<div class="hello"><h1>${greeting(new Date().getHours())}</h1><p>${esc(longDate(t))}</p></div>
+  return `${hero(t)}
   <div class="tiles">
     <button class="tile wide" style="--c:var(--blue)" data-tab="log" data-home="today">${tileIcon('log')}<div><h2>Antrenman</h2><p>${logTxt}</p></div><span class="go" aria-hidden="true">›</span></button>
     <button class="tile wide" style="--c:var(--orange)" data-tab="food" data-home="today">${tileIcon('food', 40)}<div><h2>Beslenme</h2><p>${foodTxt}</p></div><span class="go" aria-hidden="true">›</span></button>

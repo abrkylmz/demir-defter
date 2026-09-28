@@ -1,0 +1,125 @@
+/*
+ * Görsel katman: gölgeler, yumuşak geçişler ve modern ayrıntılar.
+ * Bileşenlerin yerleşimine dokunmaz; en son yüklenir.
+ */
+
+/* Kartlar: ince çizgi + yumuşak gölge */
+.ex,
+.tile,
+.meal,
+.nsum,
+.water,
+.chartcard,
+.summary > div,
+.hrow,
+.mcard,
+.util,
+.bwline,
+.noteline,
+.openday,
+.day {
+  box-shadow: var(--shadow-1);
+}
+.tile,
+.hrow,
+.util,
+.bwline,
+.noteline,
+.openday,
+.prow,
+.day {
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s;
+}
+@media (hover: hover) {
+  .tile:hover,
+  .hrow:hover,
+  .util:hover,
+  .prow:hover {
+    box-shadow: var(--shadow-2);
+  }
+}
+
+/* Düğmeler */
+.btn {
+  border-radius: 14px;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn.primary {
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.addex {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  color: var(--accent);
+}
+
+/* Ana ekran kutuları: ikon renkli rozet içinde */
+.tile svg {
+  box-sizing: content-box;
+  padding: 10px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+.tile::before {
+  width: 6px;
+}
+
+/* Hafta şeridi: seçili gün marka rengiyle */
+.day.sel {
+  outline: none;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.day.sel .dn {
+  color: var(--on-accent);
+}
+.day.sel .dots i {
+  background: var(--on-accent);
+}
+
+/* Alt sekme çubuğu: aktif sekme hap vurgulu */
+nav.tabs button svg {
+  box-sizing: content-box;
+  padding: 3px 16px;
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+nav.tabs button[aria-current='page'] svg {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Alt panel */
+.sheet {
+  box-shadow: 0 -8px 40px rgba(28, 16, 10, 0.18);
+}
+
+/* Rekor kutlaması */
+.toast.pr {
+  background: var(--hero);
+  color: var(--on-hero);
+  border-color: transparent;
+}
+.toast.pr.show {
+  animation: pr-pop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes pr-pop {
+  0% {
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+  60% {
+    transform: translateX(-50%) translateY(0) scale(1.06);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}

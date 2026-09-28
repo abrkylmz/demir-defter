@@ -1,19 +1,4 @@
 /* Ana ekran */
-.hello {
-  margin: 18px 0 22px;
-}
-.hello h1 {
-  margin: 0;
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: 40px;
-  line-height: 1;
-  letter-spacing: -0.01em;
-}
-.hello p {
-  margin: 6px 0 0;
-  color: var(--ink-2);
-}
 .tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;

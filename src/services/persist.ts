@@ -33,7 +33,13 @@ export function persistSession(date: DateStr): void {
 
 export function persistSettings() {
   saveLocal();
-  if (isCloud()) writeDoc('settings', { kind: 'settings', custom: store.custom, templates: store.templates });
+  if (isCloud())
+    writeDoc('settings', {
+      kind: 'settings',
+      custom: store.custom,
+      templates: store.templates,
+      profile: store.profile,
+    });
 }
 
 export function persistBody() {

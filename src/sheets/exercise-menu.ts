@@ -41,6 +41,7 @@ export function openExerciseMenu(i: number): void {
             );
           } else if (m === 'progress') {
             ui.progress = e.name;
+            ui.progressView = 'chart';
             ui.tab = 'progress';
             closeSheet();
             window.scrollTo(0, 0);

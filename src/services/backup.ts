@@ -14,6 +14,7 @@ import type {
   Goals,
   Macros,
   MealKey,
+  Profile,
   Store,
   Template,
 } from '../types.ts';
@@ -26,13 +27,13 @@ const LAST_BACKUP_KEY = 'demirdefter.lastBackup';
 // ---------- yedek alma ----------
 
 export function buildBackup(now = new Date()): string {
-  const { sessions, custom, templates, body, food, foodCustom, goals } = store;
+  const { sessions, custom, templates, body, food, foodCustom, goals, profile } = store;
   return JSON.stringify(
     {
       app: BACKUP_APP,
       version: BACKUP_VERSION,
       exportedAt: now.toISOString(),
-      data: { sessions, custom, templates, body, food, foodCustom, goals },
+      data: { sessions, custom, templates, body, food, foodCustom, goals, profile },
     },
     null,
     1,
@@ -165,6 +166,16 @@ function cleanGoals(g: unknown): Goals | null {
   return out;
 }
 
+function cleanProfile(p: unknown): Profile {
+  if (!isObj(p)) return {};
+  const out: Profile = {};
+  const name = str(p.name, 40).trim();
+  if (name) out.name = name;
+  const goal = num(p.weeklyGoal);
+  if (goal !== null && goal >= 1 && goal <= 7) out.weeklyGoal = Math.round(goal);
+  return out;
+}
+
 export interface BackupSummary {
   workouts: number;
   foodDays: number;
@@ -210,6 +221,7 @@ export function parseBackup(text: string): ParseResult {
     food: cleanFood(src.food),
     foodCustom: cleanFoodCustom(src.foodCustom),
     goals: cleanGoals(src.goals),
+    profile: cleanProfile(src.profile),
   };
   return {
     ok: true,

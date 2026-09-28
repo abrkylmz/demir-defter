@@ -102,11 +102,11 @@
 }
 .day .kc.ok {
   background: var(--green);
-  color: #fff;
+  color: var(--on-status);
 }
 .day .kc.miss {
   background: var(--red);
-  color: #fff;
+  color: var(--on-status);
 }
 .day .kc.pending,
 .day .kc.none {

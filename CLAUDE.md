@@ -46,14 +46,18 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 ## Depolama (önemli)
 
 - Varsayılan: `localStorage` (Vercel dahil her yerde). Cihazlar arası senkron yok.
-- claude.ai artifact'ı olarak çalışırken `window.claude.use('db' | 'user' | 'downloads')` ile bulut kullanılır. Belgeler: `s-<tarih>`, `f-<tarih>`, `body`, `settings` (custom + templates), `nutrition`. CSV butonu yalnızca orada görünür.
+- claude.ai artifact'ı olarak çalışırken `window.claude.use('db' | 'user' | 'downloads')` ile bulut kullanılır. Belgeler: `s-<tarih>`, `f-<tarih>`, `body`, `settings` (custom + templates + profile), `nutrition`.
+- `store.profile = {name?, weeklyGoal?}`: ana ekran selamlaması (`lib/greeting.ts`) ve haftalık hedef (`domain/weekly.ts`).
+- Akıllı öneri `domain/suggest.ts` (çift progresyon), rekorlar `domain/records.ts`. Kurallarını değiştirirsen `tests/features.test.ts`'i güncelle.
 - Buluttan gelen veriler dondurulmuş nesnelerdir; her zaman `clone()` ile kopyala.
 - Alt panel açıkken o günün bulut güncellemeleri bekletilir (`ui.sheetOpen` kontrolü); bu korumayı kaldırma.
 - Senkron için başka servis (Supabase/Firebase) istenirse yalnızca `services/db.ts` + `services/sync.ts` değişir.
 
 ## Tasarım kuralları
 
-- Renkler `styles/tokens.css`'te; açık ve koyu tema var (`prefers-color-scheme` + `data-theme`). Yeni renk eklerken iki temaya da ekle.
+- Renkler `styles/tokens.css`'te ("Sıcak & Enerjik": krem zemin, mercan marka); açık ve koyu tema var (`prefers-color-scheme` + `data-theme`). Yeni renk eklerken iki temaya da ekle ve metin/zemin kontrastının ≥4.5:1 olduğunu ölç.
+- `--brand` (#FF5A36) yalnızca büyük dolgu/degrade/halka içindir; üzerindeki küçük metin okunmaz. Düğme ve metin rengi `--accent`. Durum rozetleri üzerindeki metin `--on-status`.
+- Gölgeler `--shadow-1` / `--shadow-2`; kartların gölge, hover ve geçişleri `styles/polish.css`'te (en son yüklenir).
 - Plaka renkleri anlam taşıyor: kırmızı 25, mavi 20, sarı 15, yeşil 10 kg. Ana ekran kutuları da bu paleti kullanıyor, beslenme turuncu (`--orange`).
 - Rakamlar `--display` (Barlow Condensed) fontuyla, `tabular-nums`.
 - Dokunma hedefleri en az 44px. Telefon güvenli alan (safe-area) padding'leri korunmalı.

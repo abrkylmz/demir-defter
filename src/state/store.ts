@@ -19,6 +19,7 @@ export const store: Store = {
   food: {},
   foodCustom: [],
   goals: null,
+  profile: {},
 };
 
 const LS_KEY = 'demirdefter.v1';
@@ -35,6 +36,7 @@ export function loadLocal() {
     store.food = p.food || {};
     store.foodCustom = p.foodCustom || [];
     store.goals = p.goals || null;
+    store.profile = p.profile || {};
   } catch {
     // bozuk ya da erişilemeyen depolama: boş verilerle devam
   }

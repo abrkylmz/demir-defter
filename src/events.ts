@@ -15,6 +15,7 @@ import { openBodySheet } from './sheets/body-weight.ts';
 import { openDataSheet, openInstallHelp } from './sheets/data.ts';
 import { openExerciseMenu } from './sheets/exercise-menu.ts';
 import { openPicker } from './sheets/exercise-picker.ts';
+import { openProfile } from './sheets/profile.ts';
 import { openAmountSheet } from './sheets/food-amount.ts';
 import { openFoodPicker } from './sheets/food-picker.ts';
 import { openGoals } from './sheets/goals.ts';
@@ -59,6 +60,17 @@ const ACTIONS: Record<string, (el: HTMLElement) => void> = {
     persistSession(ui.date);
     render();
     toast(`Set ${ex.sets.length} kaydedildi: ${fmt(last.kg)} kg × ${last.reps}`);
+  },
+
+  pview: b => {
+    ui.progressView = data(b, 'v') === 'records' ? 'records' : 'chart';
+    render();
+  },
+  prchart: b => {
+    ui.progress = data(b, 'name');
+    ui.progressView = 'chart';
+    render();
+    window.scrollTo(0, 0);
   },
 
   // gezinme
@@ -115,6 +127,7 @@ const ACTIONS: Record<string, (el: HTMLElement) => void> = {
   bw: b => openBodySheet(data(b, 'date')),
   export: () => void exportCsv(),
   data: () => openDataSheet(),
+  profile: () => openProfile(),
   install: async () => {
     if (!(await promptInstall())) openInstallHelp();
     render();

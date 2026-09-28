@@ -41,6 +41,7 @@ beforeEach(() => {
     },
     foodCustom: [],
     goals: { kcal: 2600, p: 150, c: 300, f: 72, water: 10 },
+    profile: { name: 'Ahmet', weeklyGoal: 4 },
   });
 });
 

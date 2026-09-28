@@ -1,5 +1,6 @@
 import { weekHead } from '../components/week-nav.ts';
 import { OTHER_GROUP } from '../data/exercises.ts';
+import { suggestFor } from '../domain/suggest.ts';
 import { bestE1, exerciseHistory, lastTime } from '../domain/workout.ts';
 import {
   addDays,
@@ -70,6 +71,14 @@ export function renderLog(): string {
   </div>`;
 }
 
+/** Günün ilk setinden önce kartta gösterilen hedef. */
+function suggestionLine(e: Exercise): string {
+  const s = suggestFor(e.name, e.bar, ui.date);
+  if (!s) return '';
+  const target = s.kg > 0 ? `${fmt(s.kg)} kg × ${s.reps}` : `${s.reps} tekrar`;
+  return `<div class="suggest"><span class="suggest-tag">Bugünkü hedef</span><b class="num">${target}</b><span class="suggest-why">${esc(s.reason)}</span></div>`;
+}
+
 function renderExercise(e: Exercise, i: number): string {
   const open = ui.open.has(e.id);
   const head = `<div class="exhead"><button class="extoggle" data-act="toggle" data-id="${e.id}" aria-expanded="${open}">
@@ -106,6 +115,7 @@ function renderExercise(e: Exercise, i: number): string {
     ${head}
       <button class="iconbtn" data-act="exmenu" data-ex="${i}" aria-label="${esc(e.name)} seçenekleri">${dots}</button></div>
     ${lastTxt}
+    ${!e.sets.length ? suggestionLine(e) : ''}
     ${e.note ? `<div class="exnote">${esc(e.note)}</div>` : ''}
     ${sets ? `<ul class="sets">${sets}</ul>` : ''}
     <div class="exactions">

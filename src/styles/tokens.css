@@ -1,61 +1,103 @@
-/* Renk ve tipografi token'ları. Yeni renk eklerken açık ve koyu temaya birlikte ekle. */
+/*
+ * Renk ve tipografi token'ları — "Sıcak & Enerjik" paleti.
+ * Yeni renk eklerken açık ve koyu temaya birlikte ekle.
+ * Kontrast: metin/zemin çiftleri WCAG AA (≥4.5:1) sağlar. --brand yalnızca büyük dolgu, degrade ve
+ * halkalar içindir; üzerine küçük metin yazılacaksa --accent kullan.
+ * Plaka renkleri anlam taşır: --red 25, --blue 20, --yellow 15, --green 10 kg.
+ */
 :root {
-  --bg: #eceeea;
-  --surface: #f9faf7;
-  --surface-2: #e1e5df;
-  --ink: #16201b;
-  --ink-2: #56615b;
-  --ink-3: #86908a;
-  --line: #cfd5ce;
-  --red: #d2312d;
-  --blue: #1f55a6;
-  --yellow: #ebb21b;
-  --green: #2c8a4c;
-  --wplate: #f4f4f0;
-  --chrome: #a9b0ac;
-  --bar: #7c8580;
-  --orange: #d2691a;
-  --accent: #1f55a6;
-  --accent-soft: #dce6f5;
-  --on-accent: #fff;
-  --pr: #c98a00;
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --surface-2: #f3ece3;
+  --ink: #1c1917;
+  --ink-2: #57534e;
+  --ink-3: #736c66;
+  --line: #ebe3d8;
+
+  --brand: #ff5a36;
+  --brand-2: #ffb23e;
+  --accent: #c93a1e;
+  --accent-soft: #ffe8e1;
+  --on-accent: #ffffff;
+  /* yeşil/kırmızı durum rozetleri üzerindeki metin */
+  --on-status: #ffffff;
+
+  --red: #d2302a;
+  --blue: #2b59c3;
+  --yellow: #f2b01e;
+  --green: #2a7f48;
+  --orange: #c2610c;
+  --pr: #b87a00;
+  --wplate: #f4f1ec;
+  --chrome: #b3aba3;
+  --bar: #8a827a;
+
+  --shadow-1: 0 1px 2px rgba(60, 38, 20, 0.06), 0 2px 8px rgba(60, 38, 20, 0.05);
+  --shadow-2: 0 4px 12px rgba(60, 38, 20, 0.08), 0 12px 32px rgba(60, 38, 20, 0.08);
+  --hero: linear-gradient(135deg, #ff5a36 0%, #ff7a3d 55%, #ffb23e 100%);
+  --on-hero: #2a0e05;
+
   --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
   --body: 'Barlow', 'Segoe UI', system-ui, -apple-system, sans-serif;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
 }
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #121815;
-    --surface: #1a221e;
-    --surface-2: #242e29;
-    --ink: #e8ede9;
-    --ink-2: #a0aca6;
-    --ink-3: #6f7b75;
-    --line: #2e3933;
-    --wplate: #e6e6e0;
-    --bar: #8e9892;
-    --orange: #f0913a;
-    --accent: #5b8ee0;
-    --accent-soft: #1f2d45;
-    --on-accent: #0d1420;
-    --pr: #f0b53a;
+    --bg: #171412;
+    --surface: #221e1b;
+    --surface-2: #2d2824;
+    --ink: #f5f0ea;
+    --ink-2: #b8afa6;
+    --ink-3: #948b82;
+    --line: #3a332e;
+    --brand: #ff6a45;
+    --brand-2: #ffb84d;
+    --accent: #ff7a5c;
+    --accent-soft: #3a2119;
+    --on-accent: #1c0f0b;
+    --on-status: #1c0f0b;
+    --red: #ff6b5e;
+    --blue: #6f95ec;
+    --green: #4cc27a;
+    --orange: #f59a3c;
+    --pr: #f5bd4a;
+    --wplate: #e9e3db;
+    --bar: #9c938a;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.45);
+    --hero: linear-gradient(135deg, #e8452a 0%, #f06a32 55%, #f0a23a 100%);
+    --on-hero: #1f0a04;
+    color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --bg: #121815;
-  --surface: #1a221e;
-  --surface-2: #242e29;
-  --ink: #e8ede9;
-  --ink-2: #a0aca6;
-  --ink-3: #6f7b75;
-  --line: #2e3933;
-  --wplate: #e6e6e0;
-  --bar: #8e9892;
-  --orange: #f0913a;
-  --accent: #5b8ee0;
-  --accent-soft: #1f2d45;
-  --on-accent: #0d1420;
-  --pr: #f0b53a;
+  --bg: #171412;
+  --surface: #221e1b;
+  --surface-2: #2d2824;
+  --ink: #f5f0ea;
+  --ink-2: #b8afa6;
+  --ink-3: #948b82;
+  --line: #3a332e;
+  --brand: #ff6a45;
+  --brand-2: #ffb84d;
+  --accent: #ff7a5c;
+  --accent-soft: #3a2119;
+  --on-accent: #1c0f0b;
+  --on-status: #1c0f0b;
+  --red: #ff6b5e;
+  --blue: #6f95ec;
+  --green: #4cc27a;
+  --orange: #f59a3c;
+  --pr: #f5bd4a;
+  --wplate: #e9e3db;
+  --bar: #9c938a;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --hero: linear-gradient(135deg, #e8452a 0%, #f06a32 55%, #f0a23a 100%);
+  --on-hero: #1f0a04;
+  color-scheme: dark;
 }

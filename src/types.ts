@@ -94,6 +94,13 @@ export interface Goals {
   profile?: GoalProfile;
 }
 
+export interface Profile {
+  /** Selamlamada kullanılan ad */
+  name?: string;
+  /** Haftalık antrenman hedefi (gün) */
+  weeklyGoal?: number;
+}
+
 export interface Store {
   sessions: Record<DateStr, Session>;
   custom: ExerciseInfo[];
@@ -102,6 +109,7 @@ export interface Store {
   food: Record<DateStr, FoodDay>;
   foodCustom: CustomFood[];
   goals: Goals | null;
+  profile: Profile;
 }
 
 export type Tab = 'home' | 'log' | 'food' | 'history' | 'progress' | 'body';

@@ -16,6 +16,7 @@ import type {
   FoodItem,
   Goals,
   Session,
+  Profile,
   Template,
 } from '../types.ts';
 
@@ -30,6 +31,7 @@ interface RemoteDoc {
   entries?: Record<DateStr, number>;
   custom?: ExerciseInfo[] & CustomFood[];
   templates?: Template[];
+  profile?: Profile;
   goals?: Goals | null;
 }
 
@@ -80,6 +82,7 @@ async function mergeInitial() {
   const rFood: Record<DateStr, FoodDay> = {};
   let custom: ExerciseInfo[] = [];
   let rTpl: Template[] = [];
+  let rProfile: Profile | null = null;
   let body: Record<DateStr, number> | null = null;
   let nut: RemoteDoc | null = null;
   for (const doc of snap.docs) {
@@ -88,6 +91,7 @@ async function mergeInitial() {
     if (doc.id === 'settings') {
       custom = v.custom || [];
       rTpl = v.templates || [];
+      rProfile = v.profile || null;
     } else if (doc.id === 'body') body = v.entries || {};
     else if (doc.id === 'nutrition') nut = v;
     else if (v.kind === 'food' && v.date) rFood[v.date] = { items: v.items || [], water: v.water || 0 };
@@ -114,6 +118,10 @@ async function mergeInitial() {
   store.sessions = remote;
   store.custom = mergedCustom;
   store.templates = mergedTpl;
+  // Profil: bulutta boş alanlar yereldekiyle tamamlanır
+  const mergedProfile = { ...store.profile, ...(rProfile || {}) };
+  const profileChanged = JSON.stringify(mergedProfile) !== JSON.stringify(rProfile || {});
+  store.profile = mergedProfile;
   store.body = mergedBody;
   saveLocal();
   if (bodyChanged) persistBody();
@@ -137,7 +145,8 @@ async function mergeInitial() {
   foodLocalOnly.forEach(k => persistFood(k));
   if (nutNeedsWrite) persistNut();
   localOnly.forEach(k => persistSession(k));
-  if (mergedCustom.length !== custom.length || mergedTpl.length !== rTpl.length) persistSettings();
+  if (mergedCustom.length !== custom.length || mergedTpl.length !== rTpl.length || profileChanged)
+    persistSettings();
 }
 
 function applySnapshot(snapshot: CloudSnapshot): void {
@@ -166,6 +175,7 @@ function applySnapshot(snapshot: CloudSnapshot): void {
       if (v && !removed) {
         store.custom = v.custom || [];
         store.templates = v.templates || [];
+        store.profile = v.profile || {};
         changed = true;
       }
       return;

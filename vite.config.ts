@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
 
-const THEME_LIGHT = '#ECEEEA';
+const THEME_LIGHT = '#FAF7F2';
 
 export default defineConfig({
   server: { port: 8000 },

@@ -1,5 +1,7 @@
 import { barbellCaption, barbellSVG } from '../components/barbell.ts';
-import { bestE1, lastTime, session } from '../domain/workout.ts';
+import { suggestFor, type Suggestion } from '../domain/suggest.ts';
+import { bestE1, session } from '../domain/workout.ts';
+import { shortDate } from '../lib/date.ts';
 import { data, esc, parseDecimal, q, qa } from '../lib/dom.ts';
 import { e1rm } from '../lib/fitness.ts';
 import { fmt } from '../lib/format.ts';
@@ -11,26 +13,36 @@ import type { Exercise, SetEntry } from '../types.ts';
 
 const REP_CHIPS = [3, 5, 6, 8, 10, 12, 15];
 
-/** Başlangıç değerleri: düzenlenen set > bugünkü son set > önceki antrenmanın ilk seti > varsayılan. */
-function initialValues(e: Exercise, setIdx?: number): SetEntry {
+/** Başlangıç değerleri: düzenlenen set > bugünkü son set > akıllı öneri > varsayılan. */
+function initialValues(e: Exercise, setIdx: number | undefined, suggestion: Suggestion | null): SetEntry {
   if (setIdx !== undefined) return e.sets[setIdx];
   if (e.sets.length) return e.sets[e.sets.length - 1];
-  const lt = lastTime(e.name, ui.date);
-  if (lt) return lt.sets[0];
+  if (suggestion) return suggestion;
   return { kg: e.bar ? 20 : 10, reps: 10 };
+}
+
+/** Panelin üstündeki öneri: hedef, gerekçe ve dayandığı önceki set. Değerler alanlara önceden doldurulur. */
+function suggestionBox(s: Suggestion): string {
+  const target = s.kg > 0 ? `${fmt(s.kg)} kg × ${s.reps}` : `${s.reps} tekrar`;
+  const prev = s.basis.kg > 0 ? `${fmt(s.basis.kg)} × ${s.basis.reps}` : `${s.basis.reps} tekrar`;
+  return `<div class="suggest in-sheet"><span class="suggest-tag">Öneri</span><b class="num">${target}</b>
+    <span class="suggest-why">${esc(s.reason)}. Geçen sefer ${prev} (${esc(shortDate(s.basisDate))}).</span></div>`;
 }
 
 /** Set ekleme (setIdx yoksa) ya da düzenleme paneli. */
 export function openSetSheet(exIdx: number, setIdx?: number): void {
   const e = session(ui.date, true).exercises[exIdx];
   const editing = setIdx !== undefined;
-  const { kg, reps } = initialValues(e, setIdx);
+  // Öneri yalnızca günün ilk setinde gösterilir; sonraki setler bir öncekinden devam eder.
+  const suggestion = !editing && !e.sets.length ? suggestFor(e.name, e.bar, ui.date) : null;
+  const { kg, reps } = initialValues(e, setIdx, suggestion);
   const step = e.bar ? 2.5 : 1;
   const setNo = editing ? setIdx + 1 : e.sets.length + 1;
 
   openSheet(
     `
     <h2>${esc(e.name)}</h2><div class="sub">${editing ? `Set ${setNo} düzenleniyor` : `Set ${setNo}`}</div>
+    ${suggestion ? suggestionBox(suggestion) : ''}
     ${e.bar ? `<div class="barbell"><div id="bb">${barbellSVG(kg)}</div><div class="cap" id="bbcap">${esc(barbellCaption(kg))}</div></div>` : ''}
     <div class="field"><label for="kgIn">Ağırlık (kg)${e.bar ? '' : ', vücut ağırlığı için 0'}</label>
       <div class="stepper"><button type="button" data-step="kg" data-d="-${step}" aria-label="${fmt(step)} kilo azalt">−</button>

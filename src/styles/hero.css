@@ -1,0 +1,104 @@
+/* Ana ekran kahraman kartı: kişisel selamlama ve haftalık hedef */
+.hero {
+  position: relative;
+  overflow: hidden;
+  margin: 14px 0 18px;
+  padding: 18px 18px 16px;
+  border-radius: 24px;
+  background: var(--hero);
+  color: var(--on-hero);
+  box-shadow: var(--shadow-2);
+}
+/* yumuşak ışık lekesi */
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  top: -80px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 70%);
+  pointer-events: none;
+}
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hero-text {
+  min-width: 0;
+}
+.hero-date {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.hero h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.hero-goal {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  border-radius: 50%;
+}
+.hero-goal:focus-visible {
+  outline-color: var(--on-hero);
+}
+.hero-ring {
+  position: absolute;
+  inset: 0;
+}
+.hero-ring-txt {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.hero-ring-txt b {
+  font-size: 26px;
+}
+.hero-sub {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.hero-cta {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2a0e05;
+  font-weight: 700;
+}
+.hero-cta:hover {
+  background: #fff;
+}
+@media (max-width: 360px) {
+  .hero h1 {
+    font-size: 32px;
+  }
+}

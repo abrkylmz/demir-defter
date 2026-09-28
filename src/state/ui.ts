@@ -12,6 +12,8 @@ interface UiState {
   foodOpen: DateStr | null;
   justOpened: boolean;
   progress: string | null;
+  /** İlerleme ekranı: hareket grafiği ya da rekorlar listesi */
+  progressView: 'chart' | 'records';
   sheetOpen: boolean;
 }
 
@@ -29,6 +31,7 @@ export const ui: UiState = {
   justOpened: false,
   /** İlerleme ekranında seçili hareket. */
   progress: null,
+  progressView: 'chart',
   /** Alt panel açıkken o günün bulut güncellemeleri bekletilir. */
   sheetOpen: false,
 };
