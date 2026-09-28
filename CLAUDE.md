@@ -45,7 +45,9 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 
 ## Depolama (önemli)
 
-- Varsayılan: `localStorage` (Vercel dahil her yerde). Cihazlar arası senkron yok.
+- Hesaplar: Supabase (`services/supabase.ts` istemci + CloudDb adaptörü, `services/account.ts` akışlar, `views/auth.ts` giriş ekranı). `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` yoksa hesap sistemi tamamen kapalıdır ve kod build'e girmez. Şema `supabase/schema.sql`; RLS kurallarını gevşetme.
+- Yerel önbellek anahtarı: misafir `demirdefter.v1`, hesaplı `demirdefter.v1:<userId>` (`useStorageFor`). Girişte misafir verisi hesaba taşınıp silinir (`mergeGuest`), çıkışta kullanıcının önbelleği silinir. Başka kullanıcının verisi asla görünmemeli.
+- Hesapsız mod: `localStorage` (Vercel dahil). Cihazlar arası senkron yok.
 - claude.ai artifact'ı olarak çalışırken `window.claude.use('db' | 'user' | 'downloads')` ile bulut kullanılır. Belgeler: `s-<tarih>`, `f-<tarih>`, `body`, `settings` (custom + templates + profile), `nutrition`.
 - `store.profile = {name?, weeklyGoal?}`: ana ekran selamlaması (`lib/greeting.ts`) ve haftalık hedef (`domain/weekly.ts`).
 - Akıllı öneri `domain/suggest.ts` (çift progresyon), rekorlar `domain/records.ts`. Kurallarını değiştirirsen `tests/features.test.ts`'i güncelle.

@@ -1,0 +1,96 @@
+/* Giriş / kayıt ekranı */
+body.auth-mode nav.tabs,
+body.auth-mode header.top {
+  display: none;
+}
+body.auth-mode .app {
+  padding-bottom: 40px;
+}
+.auth {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 36px 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.auth-brand {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.auth-brand h1 {
+  margin: 10px 0 4px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1;
+}
+.auth-brand p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 16px 16px 12px;
+  box-shadow: var(--shadow-2);
+}
+.auth-card .field {
+  margin: 12px 0;
+}
+.auth-card .textbtn {
+  display: block;
+  margin: 8px auto 0;
+}
+.auth-error {
+  min-height: 1.3em;
+  margin: 4px 2px 10px;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 600;
+}
+.auth-error:empty {
+  margin-bottom: 4px;
+}
+.auth-note {
+  padding: 4px 2px 14px;
+}
+.auth-note b {
+  font-family: var(--display);
+  font-size: 22px;
+}
+.auth-note p {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+}
+.auth-guest {
+  margin: 18px auto 0;
+}
+.auth-foot {
+  margin: 4px 12px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* Profil panelindeki hesap bölümü */
+.account {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.account-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.account-mail {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}

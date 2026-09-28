@@ -22,30 +22,83 @@ export const store: Store = {
   profile: {},
 };
 
-const LS_KEY = 'demirdefter.v1';
+/** Hesapsız (misafir) verilerin anahtarı. Hesaplı kullanıcılar kendi anahtarlarını kullanır. */
+export const GUEST_KEY = 'demirdefter.v1';
+let lsKey = GUEST_KEY;
 
-export function loadLocal() {
+/** Yerel önbelleği bir kullanıcıya bağlar; null misafir moduna döner. */
+export function useStorageFor(userId: string | null): void {
+  lsKey = userId ? `${GUEST_KEY}:${userId}` : GUEST_KEY;
+}
+
+const empty = (): Store => ({
+  sessions: {},
+  custom: [],
+  templates: [],
+  body: {},
+  food: {},
+  foodCustom: [],
+  goals: null,
+  profile: {},
+});
+
+/** Tüm verileri bellekte sıfırlar (çıkışta). */
+export function resetStore(): void {
+  Object.assign(store, empty());
+}
+
+function readKey(key: string): Store | null {
   try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return;
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
     const p = JSON.parse(raw);
-    store.sessions = p.sessions || {};
-    store.custom = p.custom || [];
-    store.templates = p.templates || [];
-    store.body = p.body || {};
-    store.food = p.food || {};
-    store.foodCustom = p.foodCustom || [];
-    store.goals = p.goals || null;
-    store.profile = p.profile || {};
+    return {
+      sessions: p.sessions || {},
+      custom: p.custom || [],
+      templates: p.templates || [],
+      body: p.body || {},
+      food: p.food || {},
+      foodCustom: p.foodCustom || [],
+      goals: p.goals || null,
+      profile: p.profile || {},
+    };
   } catch {
-    // bozuk ya da erişilemeyen depolama: boş verilerle devam
+    // bozuk ya da erişilemeyen depolama
+    return null;
   }
 }
 
-export function saveLocal() {
+export function loadLocal(): void {
+  Object.assign(store, readKey(lsKey) || empty());
+}
+
+export function saveLocal(): void {
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify(store));
+    localStorage.setItem(lsKey, JSON.stringify(store));
   } catch {
     // gizli sekme ya da kota dolu: sessizce geç
+  }
+}
+
+/**
+ * Bu cihazdaki misafir verisini hesaba taşımak için alır ve cihazdan siler.
+ * Böylece aynı cihazda sonra giriş yapan başka biri bu verileri görmez.
+ */
+export function takeGuestData(): Store | null {
+  const data = readKey(GUEST_KEY);
+  try {
+    localStorage.removeItem(GUEST_KEY);
+  } catch {
+    // depolama kapalı
+  }
+  return data;
+}
+
+/** Çıkışta bu kullanıcının yerel önbelleğini siler. */
+export function clearLocal(): void {
+  try {
+    localStorage.removeItem(lsKey);
+  } catch {
+    // depolama kapalı
   }
 }

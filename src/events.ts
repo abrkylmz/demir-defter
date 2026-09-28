@@ -8,6 +8,7 @@ import { session } from './domain/workout.ts';
 import { addDays, mondayOf, todayStr } from './lib/date.ts';
 import { closest, data, prefersReducedMotion } from './lib/dom.ts';
 import { fmt } from './lib/format.ts';
+import { continueAsGuest, submitAuthForm } from './services/account.ts';
 import { exportCsv } from './services/export.ts';
 import { promptInstall } from './services/install.ts';
 import { persistFood, persistSession } from './services/persist.ts';
@@ -72,6 +73,14 @@ const ACTIONS: Record<string, (el: HTMLElement) => void> = {
     render();
     window.scrollTo(0, 0);
   },
+
+  // hesap
+  authmode: b => {
+    ui.authMode = data(b, 'v') as NonNullable<typeof ui.authMode>;
+    render();
+    document.querySelector<HTMLInputElement>('#authForm input')?.focus();
+  },
+  guest: () => continueAsGuest(),
 
   // gezinme
   week: b => {
@@ -176,7 +185,16 @@ function onChange(e: Event): void {
   }
 }
 
+function onSubmit(e: SubmitEvent): void {
+  const form = e.target;
+  if (form instanceof HTMLFormElement && form.id === 'authForm') {
+    e.preventDefault();
+    void submitAuthForm(form);
+  }
+}
+
 export function bindEvents(): void {
   document.addEventListener('click', onClick);
+  document.addEventListener('submit', onSubmit);
   document.addEventListener('change', onChange);
 }

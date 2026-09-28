@@ -1,8 +1,8 @@
 import './styles/index.css';
 import { bindEvents } from './events.ts';
+import { initAccount } from './services/account.ts';
 import { initInstall } from './services/install.ts';
 import { initCloud } from './services/sync.ts';
-import { loadLocal } from './state/store.ts';
 import { isTab, ui } from './state/ui.ts';
 import { initSheet } from './ui/sheet.ts';
 import { render } from './views/render.ts';
@@ -15,12 +15,14 @@ function applyStartTab(): void {
   history.replaceState(null, '', location.pathname);
 }
 
-loadLocal();
 applyStartTab();
 initSheet();
 bindEvents();
 initInstall(() => {
   if (ui.tab === 'home' && !ui.sheetOpen) render();
 });
-render();
-void initCloud();
+// Oturum (varsa) yerel önbellekten okunur; ilk çizim doğru kullanıcının verisiyle yapılır.
+void initAccount().then(() => {
+  render();
+  void initCloud();
+});

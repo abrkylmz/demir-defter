@@ -70,11 +70,28 @@ Veri akışı tek yönlüdür: bir olay `store`'u değiştirir → `persist*` il
 
 Her push ve pull request'te GitHub Actions (`.github/workflows/ci.yml`) lint, tip kontrolü, biçim kontrolü, test ve build çalıştırır. Dependabot bağımlılık güncellemelerini aylık PR olarak açar.
 
+## Hesaplar (Supabase)
+
+Supabase yapılandırıldığında kullanıcılar e-posta ve şifreyle hesap açar. Herkes yalnızca kendi verisini görür ve veriler tüm cihazlarda eşitlenir. Yapılandırılmadığında uygulama hesapsız, yerel modda çalışır.
+
+Kurulum:
+
+1. [supabase.com](https://supabase.com)'da proje oluştur (bölge: Frankfurt).
+2. **SQL Editor**'de [`supabase/schema.sql`](supabase/schema.sql) dosyasını çalıştır. `docs` tablosunu, satır düzeyi güvenliği (RLS) ve canlı yayını kurar.
+3. **Authentication → URL Configuration → Site URL** alanına canlı adresi (ör. `https://demir-defter.vercel.app`) yaz. Onay ve şifre sıfırlama e-postaları bu adrese döner.
+4. **Project Settings → API**'den `Project URL` ve `anon public` anahtarını al:
+   - Yerelde: `.env.example`'ı `.env.local` olarak kopyalayıp doldur.
+   - Vercel'de: **Settings → Environment Variables**'a `VITE_SUPABASE_URL` ve `VITE_SUPABASE_ANON_KEY` ekle, sonra yeniden deploy et.
+
+`anon` anahtarı tarayıcıda görünmek üzere tasarlanmıştır; güvenlik RLS kurallarıyla sağlanır. `service_role` anahtarını asla uygulamaya koyma.
+
+Veri modeli: her kullanıcının belgeleri `docs(user_id, id, data jsonb)` satırlarıdır (`s-<tarih>`, `f-<tarih>`, `body`, `settings`, `nutrition`). `src/services/supabase.ts` bu tabloyu senkron katmanının (`sync.ts`) beklediği arayüze uyarlar. Giriş yapıldığında bu cihazdaki hesapsız veriler hesaba taşınır ve cihazdan silinir. Çıkışta kullanıcının yerel önbelleği temizlenir.
+
 ## Veri ve depolama
 
-Veriler tarayıcının `localStorage`'ında `demirdefter.v1` anahtarıyla tutulur. Bu yüzden:
+Hesapsız kullanımda veriler tarayıcının `localStorage`'ında `demirdefter.v1` anahtarıyla tutulur (hesaplı kullanıcılar için `demirdefter.v1:<kullanıcı-id>` önbelleği). Hesapsız kullanımda:
 
-- Veriler cihaza ve tarayıcıya özeldir. Telefonla bilgisayar arasında senkron **yoktur**.
+- Veriler cihaza ve tarayıcıya özeldir, cihazlar arası senkron yoktur.
 - Tarayıcı verisini silmek kayıtları da siler. Ana ekrandaki **Yedekleme ve veriler** ile JSON yedek alınıp başka cihazda geri yüklenebilir; son yedek 14 günden eskiyse uyarı gösterilir.
 - Yedekleme paneli açıldığında tarayıcıdan verileri kalıcı saklaması istenir (`navigator.storage.persist`).
 

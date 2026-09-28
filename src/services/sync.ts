@@ -2,10 +2,20 @@
 // window.claude yoksa (yerel geliştirme, Vercel) hiçbir şey yapmaz ve uygulama localStorage ile çalışır.
 import { $ } from '../lib/dom.ts';
 import { clone, nameKey, uid8 } from '../lib/format.ts';
-import { saveLocal, store } from '../state/store.ts';
+import type { User } from '@supabase/supabase-js';
+import {
+  clearLocal,
+  loadLocal,
+  resetStore,
+  saveLocal,
+  store,
+  takeGuestData,
+  useStorageFor,
+} from '../state/store.ts';
 import { ui } from '../state/ui.ts';
 import { render } from '../views/render.ts';
 import { cloud, collection } from './db.ts';
+import { displayName, supabase, supabaseDb } from './supabase.ts';
 import { pending, persistBody, persistFood, persistNut, persistSession, persistSettings } from './persist.ts';
 import type {
   CustomFood,
@@ -16,6 +26,7 @@ import type {
   FoodItem,
   Goals,
   Session,
+  Store,
   Profile,
   Template,
 } from '../types.ts';
@@ -74,6 +85,65 @@ export async function initCloud(): Promise<void> {
   } catch {
     // yerel modda devam
   }
+}
+
+// ---------- Supabase hesabı ----------
+
+let closeSupabase: (() => void) | null = null;
+
+/** Misafir verisini (hesapsız kullanım) kullanıcının verisine ekler; aynı gün iki yerde varsa hesaptaki kalır. */
+export function mergeGuest(guest: Store): void {
+  for (const [d, s] of Object.entries(guest.sessions)) if (!store.sessions[d]) store.sessions[d] = s;
+  for (const [d, f] of Object.entries(guest.food)) if (!store.food[d]) store.food[d] = f;
+  store.body = { ...guest.body, ...store.body };
+  const names = new Set(store.custom.map(c => nameKey(c.name)));
+  store.custom = store.custom.concat(guest.custom.filter(c => !names.has(nameKey(c.name))));
+  const ids = new Set(store.templates.map(t => t.id));
+  store.templates = store.templates.concat(guest.templates.filter(t => !ids.has(t.id)));
+  const foods = new Set(store.foodCustom.map(c => nameKey(c.name)));
+  store.foodCustom = store.foodCustom.concat(guest.foodCustom.filter(c => !foods.has(nameKey(c.name))));
+  store.goals = store.goals || guest.goals;
+  store.profile = { ...guest.profile, ...store.profile };
+}
+
+/** Giriş yapan kullanıcı için buluta bağlanır; yerel önbellek, misafir verisi ve bulut birleştirilir. */
+export async function startAccountSync(user: User): Promise<void> {
+  useStorageFor(user.id);
+  loadLocal();
+  const guest = takeGuestData();
+  if (guest) mergeGuest(guest);
+  const name = displayName(user);
+  if (name && !store.profile.name) store.profile = { ...store.profile, name };
+  saveLocal();
+  render();
+
+  const db = supabaseDb(supabase(), user.id);
+  cloud.db = db;
+  cloud.userId = user.id;
+  closeSupabase = db.close;
+  try {
+    await mergeInitial();
+    // Ad kayıttan geldiyse ve bulutta yoksa yazılsın
+    if (name && store.profile.name === name) persistSettings();
+    render();
+    collection().onSnapshot(applySnapshot, () => {});
+  } catch {
+    // Çevrimdışı: yerel önbellekle devam; persist* çağrıları bağlantı gelince yeniden denenir.
+    cloud.mode = 'cloud';
+    render();
+  }
+}
+
+/** Çıkış: canlı bağlantıyı kapatır, bu kullanıcının verisini bellekten ve cihazdan siler. */
+export function stopAccountSync(): void {
+  closeSupabase?.();
+  closeSupabase = null;
+  clearLocal();
+  cloud.mode = 'local';
+  cloud.db = null;
+  cloud.userId = null;
+  resetStore();
+  useStorageFor(null);
 }
 
 async function mergeInitial() {

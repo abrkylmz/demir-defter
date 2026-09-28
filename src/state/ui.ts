@@ -15,6 +15,10 @@ interface UiState {
   /** İlerleme ekranı: hareket grafiği ya da rekorlar listesi */
   progressView: 'chart' | 'records';
   sheetOpen: boolean;
+  /** Giriş ekranı açıkken hangi form; null ise uygulama görünür */
+  authMode: 'signin' | 'signup' | 'reset' | 'sent' | null;
+  /** Giriş ekranında gösterilen bilgi metni (ör. onay e-postası gönderildi) */
+  authInfo: string;
 }
 
 /** Kalıcı olmayan arayüz durumu. */
@@ -34,4 +38,6 @@ export const ui: UiState = {
   progressView: 'chart',
   /** Alt panel açıkken o günün bulut güncellemeleri bekletilir. */
   sheetOpen: false,
+  authMode: null,
+  authInfo: '',
 };

@@ -55,3 +55,6 @@ export function writeDoc(id: string, data: object | null): Promise<void> {
   });
   return chains[id];
 }
+
+/** Kuyruktaki tüm bulut yazmaları bittiğinde çözülür (çıkıştan önce). */
+export const writesSettled = (): Promise<unknown> => Promise.all(Object.values(chains));
