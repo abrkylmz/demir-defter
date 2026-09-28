@@ -282,3 +282,17 @@ textarea.notein:focus {
 .tdel.confirm {
   color: var(--red);
 }
+
+/* Şablon düzenleyici */
+.tpe li {
+  gap: 2px;
+}
+.tpe-name {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 4px;
+}
+.tdel:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

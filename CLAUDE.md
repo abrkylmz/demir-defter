@@ -30,7 +30,7 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 - `domain/` sorgular: `workout.ts` (`sortedDates`, `lastTime`, `exerciseHistory`, `bestE1`, `groupSets`…), `nutrition.ts`, `body.ts`
 - `services/` `db.ts` (bulut bağlantısı, `writeDoc`), `persist.ts` (`persistSession/Settings/Body/Food/Nut`), `sync.ts` (`initCloud`), `export.ts` (CSV)
 - `views/` `render()` → `renderHome`, `renderLog`, `renderFood`, `renderHistory`, `renderProgress`, `renderBody`
-- `sheets/` alt paneller: set girişi, hareket seçici/menü, not, şablonlar, besin seçici/miktar/özel besin, hedefler, tartı
+- `sheets/` alt paneller: set girişi, hareket seçici/menü, not, şablonlar (liste + `template-editor.ts`: ad, ekle/çıkar/sırala, taslak kaydedilene kadar store değişmez), besin seçici/miktar/özel besin, hedefler, tartı, profil. Hareket seçici `openPicker({ onPick, marked, markLabel, title })` ile başka amaçlarla da kullanılır; `onPick` verilmezse güne ekler.
 - `components/` grafikler, bar görseli, hafta gezgini; `ui/` `openSheet/closeSheet`, `toast`, ikonlar
 - `styles/` `tokens.css` + özelliğe göre CSS dosyaları; sıra `styles/index.css`'te (kaskad sırası önemli)
 

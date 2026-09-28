@@ -65,7 +65,7 @@ export function renderLog(): string {
   ${body}
   <button class="addex" data-act="pick">${plusLarge}Hareket ekle</button>
   <div class="logtools">
-    <button class="btn grow" data-act="templates">Şablondan ekle</button>
+    <button class="btn grow" data-act="templates">Şablonlar</button>
     ${ex.length ? '<button class="btn grow" data-act="savetpl">Şablon kaydet</button>' : ''}
     ${note ? '' : '<button class="btn grow" data-act="daynote">Not ekle</button>'}
   </div>`;

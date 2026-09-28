@@ -12,10 +12,27 @@ import { openSetSheet } from './set-entry.ts';
 const ALL = 'Tümü';
 let state = { q: '', group: ALL };
 
-export function openPicker(): void {
+export interface PickerOptions {
+  title?: string;
+  /** Seçilen hareketle ne yapılacağı; verilmezse güne eklenir ve set girişi açılır. */
+  onPick?: (info: ExerciseInfo) => void;
+  /** Listede işaretlenecek hareketler (ör. zaten eklenmiş olanlar) ve etiketi */
+  marked?: Set<string>;
+  markLabel?: string;
+}
+
+let opts: Required<PickerOptions>;
+
+export function openPicker(options: PickerOptions = {}): void {
   state = { q: '', group: ALL };
+  opts = {
+    title: options.title || 'Hareket ekle',
+    onPick: options.onPick || addExercise,
+    marked: options.marked || new Set((session(ui.date)?.exercises || []).map(e => nameKey(e.name))),
+    markLabel: options.markLabel || 'bugün eklendi',
+  };
   openSheet(
-    `<h2>Hareket ekle</h2>
+    `<h2>${esc(opts.title)}</h2>
     <input class="search" id="pq" type="search" placeholder="Ara ya da yeni hareket adı yaz" autocomplete="off" aria-label="Hareket ara">
     <div class="chips" id="pg">${[ALL]
       .concat(GROUPS)
@@ -44,13 +61,12 @@ function drawList() {
   const box = document.getElementById('plist');
   if (!box) return;
   const query = nameKey(state.q);
-  const inToday = new Set((session(ui.date)?.exercises || []).map(e => nameKey(e.name)));
   const all = allExercises();
   const list = all.filter(
     x => (state.group === ALL || x.group === state.group) && (!query || nameKey(x.name).includes(query)),
   );
   const item = (x: ExerciseInfo) =>
-    `<li><button data-pick="${esc(x.name)}"><span class="pn">${esc(x.name)}</span><span class="pg">${inToday.has(nameKey(x.name)) ? 'bugün eklendi' : esc(x.group)}</span></button></li>`;
+    `<li><button data-pick="${esc(x.name)}"><span class="pn">${esc(x.name)}</span><span class="pg">${opts.marked.has(nameKey(x.name)) ? esc(opts.markLabel) : esc(x.group)}</span></button></li>`;
 
   let html = '';
   if (!query && state.group === ALL) {
@@ -76,7 +92,7 @@ function drawList() {
   qa(box, '[data-pick]').forEach(b =>
     b.addEventListener('click', () => {
       const name = data(b, 'pick');
-      addExercise(libInfo(name) || { name, group: OTHER_GROUP, bar: false });
+      opts.onPick(libInfo(name) || { name, group: OTHER_GROUP, bar: false });
     }),
   );
   const create = box.querySelector<HTMLElement>('#ncreate');
@@ -89,7 +105,7 @@ function drawList() {
       };
       store.custom.push(info);
       persistSettings();
-      addExercise(info);
+      opts.onPick(info);
     });
 }
 

@@ -6,10 +6,11 @@ import { nameKey, uid8 } from '../lib/format.ts';
 import { persistSession, persistSettings } from '../services/persist.ts';
 import { store } from '../state/store.ts';
 import { ui } from '../state/ui.ts';
-import { trash } from '../ui/icons.ts';
+import { pencil, plus, trash } from '../ui/icons.ts';
 import { closeSheet, openSheet } from '../ui/sheet.ts';
 import { toast } from '../ui/toast.ts';
 import type { DateStr, ExerciseInfo } from '../types.ts';
+import { openTemplateEditor } from './template-editor.ts';
 
 const PAST_LIMIT = 6;
 
@@ -46,10 +47,12 @@ export function openTemplates(): void {
     ? `<ul class="tpl">${store.templates
         .map(
           t => `<li><button class="go" data-tpl="${esc(t.id)}"><span class="pn">${esc(t.name)}</span><span class="tx">${esc(t.exercises.map(x => x.name).join(', '))}</span></button>
+        <button class="tdel" data-tedit="${esc(t.id)}" aria-label="${esc(t.name)} şablonunu düzenle">${pencil}</button>
         <button class="tdel" data-tdel="${esc(t.id)}" aria-label="${esc(t.name)} şablonunu sil">${trash}</button></li>`,
         )
         .join('')}</ul>`
-    : `<p class="hint">Henüz şablonun yok. Bir günün hareketlerini “Şablon kaydet” ile saklayabilirsin.</p>`;
+    : `<p class="hint">Henüz şablonun yok. Yeni bir şablon oluştur ya da bir günün hareketlerini “Şablon kaydet” ile sakla.</p>`;
+  const newBtn = `<button class="btn" data-tnew="1" style="width:100%;margin-top:8px;border-style:dashed">${plus()}Yeni şablon oluştur</button>`;
   const pastList = past.length
     ? `<div class="pickhead">Önceki antrenmanı tekrarla</div><ul class="tpl">${past
         .map(
@@ -65,13 +68,15 @@ export function openTemplates(): void {
     : '';
 
   openSheet(
-    `<h2>Şablondan ekle</h2><div class="sub">Hareketler boş setlerle eklenir, son sefer ağırlıkları hazır gelir.</div>
-    <div id="tplbox"><div class="pickhead">Şablonların</div>${tplList}${pastList}</div>`,
+    `<h2>Şablonlar</h2><div class="sub">Şablona dokununca hareketleri güne eklenir. Kalemle düzenleyebilirsin.</div>
+    <div id="tplbox"><div class="pickhead">Şablonların</div>${tplList}${newBtn}${pastList}</div>`,
     sh => {
       q(sh, '#tplbox').addEventListener('click', ev => {
-        const b = closest(ev.target, '[data-tpl],[data-past],[data-tdel]');
+        const b = closest(ev.target, '[data-tpl],[data-past],[data-tdel],[data-tedit],[data-tnew]');
         if (!b) return;
-        if (b.dataset.tpl) {
+        if (b.dataset.tedit) openTemplateEditor(b.dataset.tedit);
+        else if (b.dataset.tnew) openTemplateEditor(null);
+        else if (b.dataset.tpl) {
           const t = store.templates.find(x => x.id === b.dataset.tpl);
           if (t) applyExercises(t.exercises);
         } else if (b.dataset.past) {
