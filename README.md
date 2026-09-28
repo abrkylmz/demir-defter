@@ -70,22 +70,36 @@ Veri akışı tek yönlüdür: bir olay `store`'u değiştirir → `persist*` il
 
 Her push ve pull request'te GitHub Actions (`.github/workflows/ci.yml`) lint, tip kontrolü, biçim kontrolü, test ve build çalıştırır. Dependabot bağımlılık güncellemelerini aylık PR olarak açar.
 
-## Hesaplar (Supabase)
+## Hesaplar (Neon + Vercel Functions)
 
-Supabase yapılandırıldığında kullanıcılar e-posta ve şifreyle hesap açar. Herkes yalnızca kendi verisini görür ve veriler tüm cihazlarda eşitlenir. Yapılandırılmadığında uygulama hesapsız, yerel modda çalışır.
+Veritabanı bağlıyken kullanıcılar e-posta ve şifreyle hesap açar; herkes yalnızca kendi verisini görür ve veriler tüm cihazlarda eşitlenir. Veritabanı bağlı değilse (ya da `npm run dev` ile API olmadan çalışırken) uygulama hesapsız, yerel modda çalışır.
 
-Kurulum:
+### Kurulum
 
-1. [supabase.com](https://supabase.com)'da proje oluştur (bölge: Frankfurt).
-2. **SQL Editor**'de [`supabase/schema.sql`](supabase/schema.sql) dosyasını çalıştır. `docs` tablosunu, satır düzeyi güvenliği (RLS) ve canlı yayını kurar.
-3. **Authentication → URL Configuration → Site URL** alanına canlı adresi (ör. `https://demir-defter.vercel.app`) yaz. Onay ve şifre sıfırlama e-postaları bu adrese döner.
-4. **Project Settings → API**'den `Project URL` ve `anon public` anahtarını al:
-   - Yerelde: `.env.example`'ı `.env.local` olarak kopyalayıp doldur.
-   - Vercel'de: **Settings → Environment Variables**'a `VITE_SUPABASE_URL` ve `VITE_SUPABASE_ANON_KEY` ekle, sonra yeniden deploy et.
+1. Vercel'de projeyi aç: **Storage → Create Database → Neon** (ya da mevcut bir Neon veritabanını **Connect**). Bölge olarak Frankfurt'u seç. `DATABASE_URL` ortam değişkeni projeye otomatik eklenir.
+2. **Deployments → Redeploy**. Tablolar ilk istekte kendiliğinden oluşturulur; SQL çalıştırmak gerekmez.
+3. İsteğe bağlı, şifre sıfırlama e-postaları: [resend.com](https://resend.com)'da anahtar oluştur ve Vercel'e `RESEND_API_KEY` ile `EMAIL_FROM` (doğrulanmış alan adından, ör. `Demir Defter <bildirim@alanadin.com>`) ekle. Eklenmezse "Şifremi unuttum" görünmez.
 
-`anon` anahtarı tarayıcıda görünmek üzere tasarlanmıştır; güvenlik RLS kurallarıyla sağlanır. `service_role` anahtarını asla uygulamaya koyma.
+Yerelde API ile çalıştırmak için: `.env.example`'ı `.env.local` olarak kopyala, `DATABASE_URL`'i doldur ve `npx vercel dev` çalıştır.
 
-Veri modeli: her kullanıcının belgeleri `docs(user_id, id, data jsonb)` satırlarıdır (`s-<tarih>`, `f-<tarih>`, `body`, `settings`, `nutrition`). `src/services/supabase.ts` bu tabloyu senkron katmanının (`sync.ts`) beklediği arayüze uyarlar. Giriş yapıldığında bu cihazdaki hesapsız veriler hesaba taşınır ve cihazdan silinir. Çıkışta kullanıcının yerel önbelleği temizlenir.
+### Mimari
+
+```
+api/
+  auth.ts        /api/auth?action=signup|login|logout|reset-request|reset, GET: oturum durumu
+  docs.ts        /api/docs: GET (since ile değişenler), PUT ?id=, DELETE ?id=
+  _lib/          db (Neon, şema), auth (scrypt, oturum, deneme sınırı), http, mail (Resend)
+```
+
+- **Şifreler** `scrypt` ile (N=2^15) tuzlanıp özetlenir; düz metin hiçbir yerde tutulmaz.
+- **Oturum** `HttpOnly; SameSite=Lax; Secure` çerezde rastgele bir belirteçtir; veritabanında yalnızca SHA-256 özeti tutulur. Süre 60 gün, şifre değişince tüm oturumlar kapanır.
+- **CSRF**: değiştirici isteklerde `x-demir-defter` başlığı ve aynı köken zorunludur.
+- **Deneme sınırı**: aynı e-posta için 15 dakikada 10 hatalı girişten sonra geçici kilit.
+- **İzolasyon**: her sorgu oturumdaki kullanıcının `user_id`'siyle sınırlıdır; belge kimlikleri beyaz listeyle doğrulanır.
+- **Senkron**: veri modeli `docs(user_id, id, data jsonb)` (`s-<tarih>`, `f-<tarih>`, `body`, `settings`, `nutrition`). İstemci (`src/services/api.ts`) uygulama öne geldiğinde, internet geri geldiğinde ve açıkken dakikada bir değişiklikleri çeker. Çevrimdışı yazılamayan belgeler kirli olarak işaretlenir ve bağlantı gelince buluttaki sürümün üzerine gönderilir.
+- Girişte bu cihazdaki hesapsız veriler hesaba taşınır ve cihazdan silinir; çıkışta kullanıcının yerel önbelleği temizlenir.
+
+API testleri gerçek bir Postgres'e (PGlite, süreç içi) karşı çalışır: `tests/api.test.ts`.
 
 ## Veri ve depolama
 
@@ -102,8 +116,6 @@ Yedek biçimi: `{app: "demir-defter", version: 1, exportedAt, data: {sessions, c
 `vite-plugin-pwa` (Workbox) build sırasında `sw.js` ve `manifest.webmanifest` üretir. Tüm uygulama dosyaları ve fontlar önbelleğe alınır; ilk ziyaretten sonra internet olmadan çalışır. Yeni sürüm arka planda iner ve bir sonraki açılışta devreye girer. Fontlar `@fontsource` ile uygulamanın içinden sunulur, dış sunucuya istek gitmez. İkonlar `public/` altındadır.
 
 Uygulama claude.ai'da artifact olarak çalıştırıldığında `window.claude` API'si üzerinden hesaba bağlı bulut depolamayı otomatik olarak kullanır (`src/services/sync.ts`). Bu API başka hiçbir yerde yoktur.
-
-Cihazlar arası senkron istenirse yalnızca `src/services/db.ts` ve `src/services/sync.ts` bir bulut servisiyle (Supabase, Firebase vb.) değiştirilir. Geri kalan kod `store` ve `persist*` fonksiyonlarını kullandığı için etkilenmez.
 
 ## Yayına alma (GitHub + Vercel)
 

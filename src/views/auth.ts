@@ -1,8 +1,9 @@
-// Giriş / kayıt ekranı. Yalnızca Supabase yapılandırılmışsa ve kullanıcı hesapsız devam etmeyi seçmediyse görünür.
+// Giriş / kayıt ekranı. Yalnızca sunucuda hesap sistemi (veritabanı) varsa ve kullanıcı hesapsız devam etmeyi seçmediyse görünür.
 import { esc } from '../lib/dom.ts';
+import { passwordResetEnabled } from '../services/account.ts';
 import { ui } from '../state/ui.ts';
 
-export type AuthMode = 'signin' | 'signup' | 'reset' | 'sent';
+export type AuthMode = 'signin' | 'signup' | 'reset' | 'sent' | 'newpass';
 
 const LOGO = `<svg width="64" height="48" viewBox="0 0 30 22" aria-hidden="true"><rect x="0" y="9.5" width="30" height="3" rx="1.5" fill="var(--bar)"/><rect x="4" y="2" width="4" height="18" rx="1.5" fill="var(--red)"/><rect x="8.5" y="4" width="3" height="14" rx="1.2" fill="var(--blue)"/><rect x="22" y="2" width="4" height="18" rx="1.5" fill="var(--red)"/><rect x="18.5" y="4" width="3" height="14" rx="1.2" fill="var(--blue)"/></svg>`;
 
@@ -19,6 +20,14 @@ export function renderAuth(): string {
     body = `<div class="auth-note" role="status"><b>E-postanı kontrol et</b>
       <p>${esc(ui.authInfo)}</p></div>
       <button type="button" class="btn primary" style="width:100%" data-act="authmode" data-v="signin">Giriş ekranına dön</button>`;
+  } else if (mode === 'newpass') {
+    body = `<form id="authForm" data-mode="newpass" novalidate>
+        <p class="hint">Hesabın için yeni bir şifre belirle.</p>
+        ${field('aPass', 'Yeni şifre', 'password', 'new-password', 'minlength="8"')}
+        <p class="hint">En az 8 karakter.</p>
+        <p class="auth-error" role="alert" id="aError"></p>
+        <button class="btn primary" style="width:100%" type="submit">Şifreyi kaydet ve giriş yap</button>
+      </form>`;
   } else if (mode === 'reset') {
     body = `<form id="authForm" data-mode="reset" novalidate>
         <p class="hint">E-posta adresini gir, şifreni yenilemen için bir bağlantı gönderelim.</p>
@@ -38,7 +47,7 @@ export function renderAuth(): string {
         <p class="auth-error" role="alert" id="aError"></p>
         <button class="btn primary" style="width:100%" type="submit">${signup ? 'Hesap oluştur' : 'Giriş yap'}</button>
       </form>
-      ${signup ? '' : '<button type="button" class="textbtn" data-act="authmode" data-v="reset">Şifremi unuttum</button>'}`;
+      ${!signup && passwordResetEnabled() ? '<button type="button" class="textbtn" data-act="authmode" data-v="reset">Şifremi unuttum</button>' : ''}`;
   }
 
   return `<section class="auth" aria-labelledby="authTitle">

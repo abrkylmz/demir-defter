@@ -2,7 +2,6 @@
 // window.claude yoksa (yerel geliştirme, Vercel) hiçbir şey yapmaz ve uygulama localStorage ile çalışır.
 import { $ } from '../lib/dom.ts';
 import { clone, nameKey, uid8 } from '../lib/format.ts';
-import type { User } from '@supabase/supabase-js';
 import {
   clearLocal,
   loadLocal,
@@ -15,8 +14,16 @@ import {
 import { ui } from '../state/ui.ts';
 import { render } from '../views/render.ts';
 import { cloud, collection } from './db.ts';
-import { displayName, supabase, supabaseDb } from './supabase.ts';
-import { pending, persistBody, persistFood, persistNut, persistSession, persistSettings } from './persist.ts';
+import { apiDb, ApiError, type AccountUser } from './api.ts';
+import {
+  flushDirty,
+  pending,
+  persistBody,
+  persistFood,
+  persistNut,
+  persistSession,
+  persistSettings,
+} from './persist.ts';
 import type {
   CustomFood,
   DateStr,
@@ -87,9 +94,9 @@ export async function initCloud(): Promise<void> {
   }
 }
 
-// ---------- Supabase hesabı ----------
+// ---------- hesap (kendi API'miz + Neon) ----------
 
-let closeSupabase: (() => void) | null = null;
+let closeRemote: (() => void) | null = null;
 
 /** Misafir verisini (hesapsız kullanım) kullanıcının verisine ekler; aynı gün iki yerde varsa hesaptaki kalır. */
 export function mergeGuest(guest: Store): void {
@@ -107,38 +114,42 @@ export function mergeGuest(guest: Store): void {
 }
 
 /** Giriş yapan kullanıcı için buluta bağlanır; yerel önbellek, misafir verisi ve bulut birleştirilir. */
-export async function startAccountSync(user: User): Promise<void> {
+export async function startAccountSync(user: AccountUser): Promise<void> {
   useStorageFor(user.id);
   loadLocal();
   const guest = takeGuestData();
   if (guest) mergeGuest(guest);
-  const name = displayName(user);
-  if (name && !store.profile.name) store.profile = { ...store.profile, name };
+  if (user.name && !store.profile.name) store.profile = { ...store.profile, name: user.name };
   saveLocal();
   render();
 
-  const db = supabaseDb(supabase(), user.id);
+  const db = apiDb(flushDirty);
   cloud.db = db;
   cloud.userId = user.id;
-  closeSupabase = db.close;
+  closeRemote = db.close;
   try {
+    // Çevrimdışı yapılan düzenlemeler önce gönderilir; yoksa buluttaki eski sürüm üzerine yazardı.
+    if (!(await flushDirty())) throw new Error('offline');
     await mergeInitial();
-    // Ad kayıttan geldiyse ve bulutta yoksa yazılsın
-    if (name && store.profile.name === name) persistSettings();
-    render();
-    collection().onSnapshot(applySnapshot, () => {});
+    if (user.name && store.profile.name === user.name) persistSettings();
   } catch {
-    // Çevrimdışı: yerel önbellekle devam; persist* çağrıları bağlantı gelince yeniden denenir.
+    // Çevrimdışı: yerel önbellekle devam; değişiklikler kirli olarak tutulur, bağlantı gelince gönderilir.
     cloud.mode = 'cloud';
-    render();
   }
+  render();
+  collection().onSnapshot(applySnapshot, e => {
+    if (e instanceof ApiError && e.status === 401) window.dispatchEvent(new Event('dd:unauthorized'));
+  });
 }
 
-/** Çıkış: canlı bağlantıyı kapatır, bu kullanıcının verisini bellekten ve cihazdan siler. */
-export function stopAccountSync(): void {
-  closeSupabase?.();
-  closeSupabase = null;
-  clearLocal();
+/**
+ * Bağlantıyı kapatır ve veriyi bellekten siler. Çıkışta cihaz önbelleği de silinir; oturum süresi dolduğunda
+ * (keepCache) korunur ki gönderilmemiş düzenlemeler tekrar girişte gönderilebilsin.
+ */
+export function stopAccountSync({ keepCache }: { keepCache: boolean }): void {
+  closeRemote?.();
+  closeRemote = null;
+  if (!keepCache) clearLocal();
   cloud.mode = 'local';
   cloud.db = null;
   cloud.userId = null;

@@ -45,7 +45,10 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 
 ## Depolama (önemli)
 
-- Hesaplar: Supabase (`services/supabase.ts` istemci + CloudDb adaptörü, `services/account.ts` akışlar, `views/auth.ts` giriş ekranı). `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` yoksa hesap sistemi tamamen kapalıdır ve kod build'e girmez. Şema `supabase/schema.sql`; RLS kurallarını gevşetme.
+- Hesaplar: kendi API'miz `api/` (Vercel Functions, Web Request/Response) + Neon Postgres (`DATABASE_URL`). Şema `api/_lib/db.ts` → `SCHEMA` (ilk istekte IF NOT EXISTS ile kurulur; yalnızca ekleyerek değiştir). İstemci `src/services/api.ts` (fetch + CloudDb adaptörü, dakikalık çekme), akışlar `services/account.ts`, ekran `views/auth.ts`. API yoksa (404/503/JSON olmayan yanıt) hesap sistemi kapalı, uygulama yerel modda.
+- API güvenliği: scrypt şifre, HttpOnly oturum çerezi (DB'de yalnızca özet), değiştirici isteklerde `x-demir-defter` başlığı + aynı köken, giriş deneme sınırı, her sorguda `user_id` filtresi, belge kimliği beyaz listesi. Bunları gevşetme; yeni uç nokta eklersen `tests/api.test.ts`'e izolasyon testi ekle.
+- `api/` içinde importlar `.js` uzantılı yazılır (Node ESM çalışma zamanı), `_lib/` rota değildir.
+- Çevrimdışı: yazılamayan belgeler `demirdefter.dirty:<userId>` listesinde; senkrondan önce `flushDirty()` ile gönderilir (yoksa buluttaki eski sürüm yerel düzenlemeyi ezer).
 - Yerel önbellek anahtarı: misafir `demirdefter.v1`, hesaplı `demirdefter.v1:<userId>` (`useStorageFor`). Girişte misafir verisi hesaba taşınıp silinir (`mergeGuest`), çıkışta kullanıcının önbelleği silinir. Başka kullanıcının verisi asla görünmemeli.
 - Hesapsız mod: `localStorage` (Vercel dahil). Cihazlar arası senkron yok.
 - claude.ai artifact'ı olarak çalışırken `window.claude.use('db' | 'user' | 'downloads')` ile bulut kullanılır. Belgeler: `s-<tarih>`, `f-<tarih>`, `body`, `settings` (custom + templates + profile), `nutrition`.
@@ -53,7 +56,6 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 - Akıllı öneri `domain/suggest.ts` (çift progresyon), rekorlar `domain/records.ts`. Kurallarını değiştirirsen `tests/features.test.ts`'i güncelle.
 - Buluttan gelen veriler dondurulmuş nesnelerdir; her zaman `clone()` ile kopyala.
 - Alt panel açıkken o günün bulut güncellemeleri bekletilir (`ui.sheetOpen` kontrolü); bu korumayı kaldırma.
-- Senkron için başka servis (Supabase/Firebase) istenirse yalnızca `services/db.ts` + `services/sync.ts` değişir.
 
 ## Tasarım kuralları
 

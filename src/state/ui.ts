@@ -16,7 +16,7 @@ interface UiState {
   progressView: 'chart' | 'records';
   sheetOpen: boolean;
   /** Giriş ekranı açıkken hangi form; null ise uygulama görünür */
-  authMode: 'signin' | 'signup' | 'reset' | 'sent' | null;
+  authMode: 'signin' | 'signup' | 'reset' | 'sent' | 'newpass' | null;
   /** Giriş ekranında gösterilen bilgi metni (ör. onay e-postası gönderildi) */
   authInfo: string;
 }

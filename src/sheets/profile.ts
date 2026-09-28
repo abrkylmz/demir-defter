@@ -1,8 +1,7 @@
 import { DEFAULT_WEEKLY_GOAL } from '../domain/weekly.ts';
 import { closest, data, esc, q, qa } from '../lib/dom.ts';
-import { logout, showSignIn, signedInUser } from '../services/account.ts';
+import { authEnabled, logout, showSignIn, signedInUser } from '../services/account.ts';
 import { persistSettings } from '../services/persist.ts';
-import { authEnabled } from '../services/supabase.ts';
 import { store } from '../state/store.ts';
 import { closeSheet, openSheet } from '../ui/sheet.ts';
 import { toast } from '../ui/toast.ts';
