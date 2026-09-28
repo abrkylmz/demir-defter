@@ -45,7 +45,18 @@ export const SCHEMA = [
 let db: Db | null = null;
 let schemaReady: Promise<void> | null = null;
 
-export const databaseUrl = (): string | undefined => process.env.DATABASE_URL || process.env.POSTGRES_URL;
+/**
+ * Bağlantı adresi. Vercel'in Neon entegrasyonu DATABASE_URL ekler; bağlarken önek seçildiyse
+ * (ör. STORAGE_DATABASE_URL) onu da bulur. Havuzlanmamış (UNPOOLED) adresler tercih edilmez.
+ */
+export function databaseUrl(env: Record<string, string | undefined> = process.env): string | undefined {
+  const isPg = (v?: string) => !!v && /^postgres(ql)?:\/\//.test(v);
+  for (const k of ['DATABASE_URL', 'POSTGRES_URL', 'NEON_DATABASE_URL']) if (isPg(env[k])) return env[k];
+  const key = Object.keys(env)
+    .filter(k => /(^|_)(DATABASE|POSTGRES)_URL$/.test(k) && isPg(env[k]))
+    .sort()[0];
+  return key ? env[key] : undefined;
+}
 
 /** Testler için sahte ya da süreç içi veritabanı verir. */
 export function setDb(d: Db | null): void {

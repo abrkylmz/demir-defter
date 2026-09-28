@@ -3,7 +3,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import * as auth from '../api/auth.ts';
 import { hashPassword, verifyPassword } from '../api/_lib/auth.ts';
-import { setDb, type Db } from '../api/_lib/db.ts';
+import { databaseUrl, setDb, type Db } from '../api/_lib/db.ts';
 import * as docs from '../api/docs.ts';
 
 const ORIGIN = 'http://localhost:3000';
@@ -211,5 +211,15 @@ describe('/api/docs', () => {
     expect((await put(cookie, 'users', { x: 1 })).status).toBe(400);
     expect((await put(cookie, "s-2026-09-28'; drop table docs;--", { x: 1 })).status).toBe(400);
     expect((await put(cookie, 'body', [1, 2])).status).toBe(400);
+  });
+});
+
+describe('veritabanı adresi', () => {
+  const pgUrl = 'postgresql://u:p@ep-x.eu-central-1.aws.neon.tech/neondb';
+  it('DATABASE_URL öncelikli, önekli adlar da bulunur, UNPOOLED ve postgres olmayanlar atlanır', () => {
+    expect(databaseUrl({ DATABASE_URL: pgUrl })).toBe(pgUrl);
+    expect(databaseUrl({ STORAGE_DATABASE_URL: pgUrl, STORAGE_DATABASE_URL_UNPOOLED: 'x' })).toBe(pgUrl);
+    expect(databaseUrl({ OTHER_URL: pgUrl, DATABASE_URL: 'mysql://x' })).toBeUndefined();
+    expect(databaseUrl({})).toBeUndefined();
   });
 });
