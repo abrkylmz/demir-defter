@@ -1,6 +1,6 @@
 import { DEFAULT_WEEKLY_GOAL } from '../domain/weekly.ts';
 import { closest, data, esc, q, qa } from '../lib/dom.ts';
-import { authEnabled, logout, showSignIn, signedInUser } from '../services/account.ts';
+import { authEnabled, deleteAccount, logout, showSignIn, signedInUser } from '../services/account.ts';
 import { persistSettings } from '../services/persist.ts';
 import { store } from '../state/store.ts';
 import { closeSheet, openSheet } from '../ui/sheet.ts';
@@ -14,7 +14,14 @@ function accountSection(): string {
   const u = signedInUser();
   if (u)
     return `<div class="account"><span class="account-label">Hesap</span><span class="account-mail">${esc(u.email || '')}</span>
-      <button class="btn danger" id="pLogout" style="width:100%;margin-top:10px">Çıkış yap</button></div>`;
+      <button class="btn danger" id="pLogout" style="width:100%;margin-top:10px">Çıkış yap</button>
+      <button class="textbtn" id="pDelete" style="margin-top:6px;color:var(--ink-3)">Hesabımı sil</button>
+      <div id="pDeleteBox" hidden>
+        <p class="hint">Hesabın ve tüm kayıtların kalıcı olarak silinir, geri alınamaz. İstersen önce Yedekleme'den yedek al. Onaylamak için şifreni gir.</p>
+        <input id="pDelPass" class="search" style="margin-top:0" type="password" autocomplete="current-password" aria-label="Şifre">
+        <p class="auth-error" role="alert" id="pDelErr"></p>
+        <button class="btn danger" id="pDelConfirm" style="width:100%">Hesabımı kalıcı olarak sil</button>
+      </div></div>`;
   return `<div class="account"><span class="account-label">Hesapsız kullanıyorsun</span>
     <span class="account-mail">Hesap açarsan verilerin tüm cihazlarında olur.</span>
     <button class="btn" id="pSignIn" style="width:100%;margin-top:10px">Giriş yap ya da hesap oluştur</button></div>`;
@@ -61,6 +68,25 @@ export function openProfile(): void {
         }
         closeSheet();
         void logout();
+      });
+      sh.querySelector('#pDelete')?.addEventListener('click', ev => {
+        (ev.currentTarget as HTMLElement).hidden = true;
+        q(sh, '#pDeleteBox').hidden = false;
+        q(sh, '#pDelPass').focus();
+      });
+      sh.querySelector('#pDelConfirm')?.addEventListener('click', async ev => {
+        const btn = ev.currentTarget as HTMLButtonElement;
+        const pass = q<HTMLInputElement>(sh, '#pDelPass').value;
+        if (!pass) {
+          q(sh, '#pDelErr').textContent = 'Şifreni gir.';
+          return;
+        }
+        btn.disabled = true;
+        const err = await deleteAccount(pass);
+        if (err) {
+          btn.disabled = false;
+          q(sh, '#pDelErr').textContent = err;
+        } else closeSheet();
       });
       sh.querySelector('#pSignIn')?.addEventListener('click', () => {
         closeSheet();

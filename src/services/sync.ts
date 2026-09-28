@@ -13,7 +13,7 @@ import {
 } from '../state/store.ts';
 import { ui } from '../state/ui.ts';
 import { render } from '../views/render.ts';
-import { cloud, collection } from './db.ts';
+import { clearAllDirty, cloud, collection } from './db.ts';
 import { apiDb, ApiError, type AccountUser } from './api.ts';
 import {
   flushDirty,
@@ -149,7 +149,10 @@ export async function startAccountSync(user: AccountUser): Promise<void> {
 export function stopAccountSync({ keepCache }: { keepCache: boolean }): void {
   closeRemote?.();
   closeRemote = null;
-  if (!keepCache) clearLocal();
+  if (!keepCache) {
+    clearLocal();
+    clearAllDirty();
+  }
   cloud.mode = 'local';
   cloud.db = null;
   cloud.userId = null;

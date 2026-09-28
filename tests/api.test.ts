@@ -223,3 +223,24 @@ describe('veritabanı adresi', () => {
     expect(databaseUrl({})).toBeUndefined();
   });
 });
+
+describe('hesap silme', () => {
+  it('yanlış şifreyle silinmez; doğru şifreyle kullanıcı, oturumları ve belgeleri silinir', async () => {
+    const { cookie } = await signup();
+    await docs.PUT(req('/api/docs?id=body', { method: 'PUT', cookie, body: { data: { v: 1 } } }));
+    const wrong = await auth.POST(
+      req('/api/auth?action=delete', { method: 'POST', cookie, body: { password: 'yanlis' } }),
+    );
+    expect(wrong.status).toBe(401);
+    const ok = await auth.POST(
+      req('/api/auth?action=delete', { method: 'POST', cookie, body: { password: 'guclusifre1' } }),
+    );
+    expect(ok.status).toBe(200);
+    for (const t of ['users', 'sessions', 'docs'])
+      expect((await pg.query<{ n: number }>(`select count(*)::int as n from ${t}`)).rows[0].n).toBe(0);
+  });
+  it('oturumsuz silme isteği reddedilir', async () => {
+    const r = await auth.POST(req('/api/auth?action=delete', { method: 'POST', body: { password: 'x' } }));
+    expect(r.status).toBe(401);
+  });
+});

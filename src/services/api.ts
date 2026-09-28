@@ -75,6 +75,7 @@ export const signIn = (email: string, password: string) =>
   post<{ user: AccountUser }>('login', { email, password }).then(r => r.user);
 export const signOut = () => post('logout', {});
 export const requestPasswordReset = (email: string) => post('reset-request', { email });
+export const deleteAccount = (password: string) => post('delete', { password });
 export const resetPassword = (token: string, password: string) =>
   post<{ user: AccountUser }>('reset', { token, password }).then(r => r.user);
 

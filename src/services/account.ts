@@ -8,6 +8,7 @@ import { render } from '../views/render.ts';
 import {
   authErrorText,
   authStatus,
+  deleteAccount as deleteAccountApi,
   requestPasswordReset,
   resetPassword,
   signIn,
@@ -173,6 +174,23 @@ export function continueAsGuest(): void {
 export function showSignIn(): void {
   ui.authMode = 'signin';
   render();
+}
+
+/** Hesabı ve tüm verisini kalıcı olarak siler. Başarısızsa Türkçe hata metni döner. */
+export async function deleteAccount(password: string): Promise<string | null> {
+  try {
+    await deleteAccountApi(password);
+  } catch (e) {
+    return authErrorText(e);
+  }
+  user = null;
+  setStorage(USER_CACHE, null);
+  stopAccountSync({ keepCache: false });
+  ui.authMode = 'signin';
+  ui.tab = 'home';
+  render();
+  toast('Hesabın ve tüm verilerin silindi');
+  return null;
 }
 
 /** Çıkış: bekleyen yazmalar tamamlanır, bu kullanıcının verisi cihazdan silinir. */

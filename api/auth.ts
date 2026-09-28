@@ -142,6 +142,25 @@ export async function POST(req: Request): Promise<Response> {
       return loggedIn(req, d, u);
     }
 
+    if (action === 'delete') {
+      // Hesap ve tüm verisi kalıcı olarak silinir (oturumlar ve belgeler cascade ile gider). Şifre onayı gerekir.
+      const u = await sessionUser(d, req);
+      if (!u) throw new HttpError(401, 'unauthorized');
+      const password = typeof body.password === 'string' ? body.password : '';
+      await assertNotLocked(d, `delete:${u.id}`);
+      const [row] = await d.query<{ password_hash: string }>(
+        `select password_hash from users where id = $1`,
+        [u.id],
+      );
+      if (!row || !(await verifyPassword(password, row.password_hash))) {
+        await recordFailure(d, `delete:${u.id}`);
+        throw new HttpError(401, 'invalid_credentials');
+      }
+      await d.query(`delete from users where id = $1`, [u.id]);
+      await clearFailures(d, `delete:${u.id}`);
+      return json({ ok: true }, 200, { 'set-cookie': sessionCookie(req, null, 0) });
+    }
+
     throw new HttpError(404, 'unknown_action');
   } catch (e) {
     return errorResponse(e);

@@ -52,6 +52,8 @@ function setDirty(ids: string[]): void {
 
 const markDirty = (id: string) => setDirty([...new Set([...dirtyIds(), id])]);
 export const clearDirty = (id: string) => setDirty(dirtyIds().filter(x => x !== id));
+/** Bu kullanıcının kirli listesini siler (çıkışta). */
+export const clearAllDirty = () => setDirty([]);
 
 /** Hemen yazar; hata fırlatır. */
 export async function writeNow(id: string, data: object | null): Promise<void> {
