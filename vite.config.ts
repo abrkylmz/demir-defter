@@ -12,10 +12,11 @@ export default defineConfig({
   },
   plugins: [
     VitePWA({
-      // Yeni sürüm arka planda iner, uygulama bir sonraki açılışta güncellenir.
+      // Yeni sürüm indiği anda devreye girer (skipWaiting + clientsClaim).
       // Veriler her değişiklikte hemen kaydedildiği için sessiz güncelleme güvenli.
       registerType: 'autoUpdate',
-      injectRegister: 'script',
+      // Kayıt src/services/update.ts'te: yeni sürümde sayfa kendini yeniler
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'apple-touch-icon-180x180.png'],
       manifest: {
         id: '/',
@@ -47,6 +48,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}', '**/*latin*.woff2'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
       },
     }),
   ],

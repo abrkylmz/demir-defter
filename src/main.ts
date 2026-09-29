@@ -4,6 +4,7 @@ import { initAccount } from './services/account.ts';
 import { initInstall } from './services/install.ts';
 import { initCloud } from './services/sync.ts';
 import { isTab, ui } from './state/ui.ts';
+import { initUpdates } from './services/update.ts';
 import { initSheet } from './ui/sheet.ts';
 import { render } from './views/render.ts';
 
@@ -16,6 +17,7 @@ function applyStartTab(): void {
 }
 
 applyStartTab();
+initUpdates();
 initSheet();
 bindEvents();
 initInstall(() => {

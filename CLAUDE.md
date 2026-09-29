@@ -16,6 +16,7 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 
 - Yayın: GitHub → Vercel (statik, `dist/`). Ayarlar ve güvenlik başlıkları `vercel.json`'da.
 - Fontlar `@fontsource` ile paketleniyor (`styles/fonts.css`; Barlow, Barlow Condensed). Hiç dış kaynak yok; CSP `'self'` ile sınırlı. Yeni dış kaynak eklenirse `vercel.json`'daki CSP'ye de ekle.
+- Güncellemeler: servis çalışanı `services/update.ts`'te kaydedilir (`injectRegister: false`). Yeni sürüm indiğinde sayfa kendini yeniler; alt panel açıksa panel kapanana kadar bekler. Uygulama öne gelince yeni sürüm kontrol edilir.
 - PWA: `vite-plugin-pwa` (vite.config.ts). Manifest, ikonlar (`public/`), çevrimdışı önbellek ve `?tab=` kısayolları (`main.ts`). Kurulum düğmesi `services/install.ts`.
 - Yedekleme: `services/backup.ts` (JSON al/doğrula/geri yükle), `sheets/data.ts` paneli, `services/files.ts` (indirme). Yedek dosyası güvenilmezdir; yeni alan eklersen `parseBackup` temizleyicisine de ekle ve `tests/backup.test.ts`'i güncelle.
 - Komutlar: `npm run dev` (localhost:8000), `npm run build`, `npm test`, `npm run typecheck`, `npm run check` (lint + tip + format + test + build).
