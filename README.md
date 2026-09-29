@@ -82,10 +82,6 @@ Veritabanı bağlıyken kullanıcılar e-posta ve şifreyle hesap açar; herkes 
 
 Yerelde API ile çalıştırmak için: `.env.example`'ı `.env.local` olarak kopyala, `DATABASE_URL`'i doldur ve `npx vercel dev` çalıştır.
 
-### Fotoğraftan kalori (isteğe bağlı)
-
-Beslenme ekranında "Fotoğrafla ekle": tabağın fotoğrafından yiyecekler, gramajlar ve besin değerleri tahmin edilir; kullanıcı düzeltip öğüne ekler. Claude Opus 5.5 kullanır. Açmak için [console.anthropic.com](https://console.anthropic.com)'dan API anahtarı al ve Vercel'e `ANTHROPIC_API_KEY` olarak ekle. Yalnızca giriş yapmış kullanıcılar kullanabilir; kişi başı günlük 30 analiz sınırı vardır (`api/food-photo.ts` → `DAILY_LIMIT`). Fotoğraflar saklanmaz.
-
 ### Mimari
 
 ```

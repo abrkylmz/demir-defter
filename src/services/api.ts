@@ -51,19 +51,17 @@ export interface AuthStatus {
   user: AccountUser | null;
   /** Şifre sıfırlama e-postası gönderilebiliyor mu */
   reset: boolean;
-  /** Fotoğraftan kalori tahmini açık mı */
-  ai: boolean;
 }
 
 /** Açılışta: hesap sistemi açık mı ve oturum var mı? Ağ yoksa ApiError(0) fırlatır. */
 export async function authStatus(): Promise<AuthStatus> {
   try {
-    const r = await api<{ user: AccountUser | null; reset: boolean; ai?: boolean }>('/api/auth');
-    return { available: true, user: r.user, reset: r.reset, ai: !!r.ai };
+    const r = await api<{ user: AccountUser | null; reset: boolean }>('/api/auth');
+    return { available: true, user: r.user, reset: r.reset };
   } catch (e) {
     // 404: API yok (ör. vite dev), 503: veritabanı bağlanmamış
     if (e instanceof ApiError && (e.status === 404 || e.status === 503 || e.status === 405))
-      return { available: false, user: null, reset: false, ai: false };
+      return { available: false, user: null, reset: false };
     throw e;
   }
 }
@@ -78,28 +76,6 @@ export const signIn = (email: string, password: string) =>
 export const signOut = () => post('logout', {});
 export const requestPasswordReset = (email: string) => post('reset-request', { email });
 export const deleteAccount = (password: string) => post('delete', { password });
-// ---------- fotoğraftan kalori ----------
-
-export interface FoodEstimate {
-  name: string;
-  /** Uygulamanın besin tablosunda eşleşen ad; yoksa null (değerler modelin tahmini) */
-  match: string | null;
-  grams: number;
-  per: { k: number; p: number; c: number; f: number };
-  confidence: 'low' | 'medium' | 'high';
-}
-
-export interface FoodPhotoResult {
-  isFood: boolean;
-  items: FoodEstimate[];
-  note: string;
-  /** Bugün kalan analiz hakkı */
-  remaining: number;
-}
-
-export const analyzeFoodPhoto = (image: string, mediaType: string, known: string[]) =>
-  api<FoodPhotoResult>('/api/food-photo', { method: 'POST', body: { image, mediaType, known } });
-
 export const resetPassword = (token: string, password: string) =>
   post<{ user: AccountUser }>('reset', { token, password }).then(r => r.user);
 
@@ -121,19 +97,6 @@ export function authErrorText(e: unknown): string {
       return 'Çok fazla deneme oldu. 15 dakika sonra tekrar dene.';
     case 'invalid_token':
       return 'Bu bağlantının süresi dolmuş ya da kullanılmış. Yeni bir bağlantı iste.';
-    case 'daily_limit':
-      return 'Bugünkü fotoğraf analizi hakkın doldu. Yarın tekrar deneyebilir ya da elle ekleyebilirsin.';
-    case 'ai_refused':
-      return 'Bu fotoğraf analiz edilemedi. Başka bir fotoğraf dene ya da elle ekle.';
-    case 'ai_busy':
-      return 'Servis şu an yoğun, birazdan tekrar dene.';
-    case 'ai_error':
-    case 'ai_bad_output':
-      return 'Fotoğraf analiz edilemedi, tekrar dene.';
-    case 'invalid_image':
-      return 'Bu dosya okunamadı. Fotoğraf seçtiğinden emin ol.';
-    case 'unauthorized':
-      return 'Bu özellik için giriş yapman gerekiyor.';
     case 'unavailable':
       return 'İnternet bağlantısı yok gibi görünüyor.';
     default:
