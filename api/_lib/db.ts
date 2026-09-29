@@ -40,6 +40,12 @@ export const SCHEMA = [
      user_id uuid not null references users (id) on delete cascade,
      expires_at timestamptz not null
    )`,
+  `create table if not exists ai_usage (
+     user_id uuid not null references users (id) on delete cascade,
+     day date not null,
+     count int not null,
+     primary key (user_id, day)
+   )`,
 ];
 
 let db: Db | null = null;

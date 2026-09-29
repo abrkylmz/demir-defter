@@ -26,6 +26,7 @@ import {
   SESSION_COOKIE,
   sessionCookie,
 } from './_lib/http.js';
+import { aiEnabled } from './_lib/food-ai.js';
 import { mailEnabled, sendResetEmail } from './_lib/mail.js';
 
 const RESET_MINUTES = 60;
@@ -49,7 +50,7 @@ export async function GET(req: Request): Promise<Response> {
   try {
     const d = await db();
     const user = await sessionUser(d, req);
-    return json({ user: user ? publicUser(user) : null, reset: mailEnabled() });
+    return json({ user: user ? publicUser(user) : null, reset: mailEnabled(), ai: aiEnabled() });
   } catch (e) {
     return errorResponse(e);
   }

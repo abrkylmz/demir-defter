@@ -34,6 +34,8 @@ const small = (body: string) =>
 export const pencil = small('<path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/>');
 export const arrowUp = small('<path d="M10 16V4M5 9l5-5 5 5"/>');
 export const arrowDown = small('<path d="M10 4v12M5 11l5 5 5-5"/>');
+export const camera =
+  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 export const cross = small('<path d="M5 5l10 10M15 5L5 15"/>');
 
 const tabIcon = (size: number, strokeWidth: number, body: string, join = true) =>

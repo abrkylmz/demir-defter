@@ -3,7 +3,10 @@ import { allFoods, recentFoods } from '../domain/nutrition.ts';
 import { closest, data, esc, q, qa } from '../lib/dom.ts';
 import type { Food, MealKey } from '../types.ts';
 import { fmt, nameKey } from '../lib/format.ts';
-import { openSheet } from '../ui/sheet.ts';
+import { photoFoodNeedsLogin, photoFoodReady, showSignIn } from '../services/account.ts';
+import { camera } from '../ui/icons.ts';
+import { closeSheet, openSheet } from '../ui/sheet.ts';
+import { openFoodPhoto } from './food-photo.ts';
 import { openCustomFood } from './custom-food.ts';
 import { openAmountSheet } from './food-amount.ts';
 
@@ -15,6 +18,7 @@ export function openFoodPicker(meal?: MealKey): void {
   const cats = [ALL, MY_FOODS_CAT].concat(FOOD_CATS);
   openSheet(
     `<h2>${mealName(state.meal)} için ekle</h2>
+    ${photoEntry()}
     <input class="search" id="fq" type="search" placeholder="Besin ara, örn. yumurta" autocomplete="off" aria-label="Besin ara">
     <div class="chips" id="fc">${cats.map(c => `<button type="button" class="chip" data-c="${c}" aria-pressed="${c === ALL}">${c}</button>`).join('')}</div>
     <div id="flist"></div>`,
@@ -31,9 +35,23 @@ export function openFoodPicker(meal?: MealKey): void {
         qa(sh, '[data-c]').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.c === state.cat)));
         drawList();
       });
+      sh.querySelector('#fphoto')?.addEventListener('click', () => openFoodPhoto(state.meal));
+      sh.querySelector('#fphotoLogin')?.addEventListener('click', () => {
+        closeSheet();
+        showSignIn();
+      });
       drawList();
     },
   );
+}
+
+/** Fotoğraftan kalori girişi: hesap varsa düğme, hesapsızsa giriş önerisi, sunucuda kapalıysa hiçbiri. */
+function photoEntry(): string {
+  if (photoFoodReady())
+    return `<button class="btn photo-btn" id="fphoto">${camera}<span><b>Fotoğrafla ekle</b><small>Tabağını çek, kalorisini tahmin edeyim</small></span></button>`;
+  if (photoFoodNeedsLogin())
+    return `<p class="hint">Tabağının fotoğrafından kalori tahmini için <button type="button" class="textbtn" id="fphotoLogin" style="padding:4px 2px">giriş yap</button>.</p>`;
+  return '';
 }
 
 function drawList() {

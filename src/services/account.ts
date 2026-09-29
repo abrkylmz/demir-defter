@@ -26,11 +26,16 @@ export const MIN_PASSWORD = 8;
 
 let available = false;
 let resetEnabled = false;
+let aiAvailable = false;
 let user: AccountUser | null = null;
 let resetToken: string | null = null;
 
 export const authEnabled = (): boolean => available;
 export const passwordResetEnabled = (): boolean => resetEnabled;
+/** Fotoğraftan kalori: sunucuda açık ve kullanıcı giriş yapmış. */
+export const photoFoodReady = (): boolean => aiAvailable && !!user;
+/** Sunucuda açık ama kullanıcı hesapsız: giriş önerilir. */
+export const photoFoodNeedsLogin = (): boolean => aiAvailable && !user;
 export const signedInUser = (): AccountUser | null => user;
 
 function storage<T>(key: string): T | null {
@@ -78,6 +83,7 @@ export async function initAccount(): Promise<void> {
     const s = await authStatus();
     available = s.available;
     resetEnabled = s.reset;
+    aiAvailable = s.ai;
     if (!available) return;
     if (resetToken) ui.authMode = 'newpass';
     else if (s.user) await activate(s.user);

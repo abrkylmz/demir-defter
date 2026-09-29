@@ -5,6 +5,8 @@ import * as auth from '../api/auth.ts';
 import { hashPassword, verifyPassword } from '../api/_lib/auth.ts';
 import { databaseUrl, setDb, type Db } from '../api/_lib/db.ts';
 import * as docs from '../api/docs.ts';
+import * as foodPhoto from '../api/food-photo.ts';
+import { setFoodModel, type FoodModelResult } from '../api/_lib/food-ai.ts';
 
 const ORIGIN = 'http://localhost:3000';
 let pg: PGlite;
@@ -19,7 +21,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   // Şema ilk istekte oluşur; her testten önce tabloları boşalt
   await auth.GET(new Request(`${ORIGIN}/api/auth`));
-  await pg.exec('truncate users, sessions, docs, login_attempts, password_resets cascade');
+  await pg.exec('truncate users, sessions, docs, login_attempts, password_resets, ai_usage cascade');
 });
 
 type Opts = { method?: string; body?: unknown; cookie?: string; client?: boolean; origin?: string };
@@ -242,5 +244,108 @@ describe('hesap silme', () => {
   it('oturumsuz silme isteği reddedilir', async () => {
     const r = await auth.POST(req('/api/auth?action=delete', { method: 'POST', body: { password: 'x' } }));
     expect(r.status).toBe(401);
+  });
+});
+
+describe('/api/food-photo', () => {
+  const IMG =
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  const ok: FoodModelResult = {
+    ok: true,
+    data: {
+      is_food: true,
+      note: 'Pilav porsiyonu tabağa göre tahmin edildi.',
+      items: [
+        {
+          name: 'Pirinç pilavı',
+          match: 'Pirinç pilavı (tereyağlı)',
+          grams: 180,
+          kcal: 165,
+          protein: 3,
+          carbs: 30,
+          fat: 3.5,
+          confidence: 'high',
+        },
+        {
+          name: 'Tavuk sote',
+          match: 'Uydurma besin',
+          grams: 99999,
+          kcal: -5,
+          protein: 25,
+          carbs: 4,
+          fat: 8,
+          confidence: 'medium',
+        },
+      ],
+    },
+  };
+  const send = (
+    cookie: string | undefined,
+    body: unknown = { image: IMG, mediaType: 'image/png', known: ['Pirinç pilavı (tereyağlı)'] },
+  ) => foodPhoto.POST(req('/api/food-photo', { method: 'POST', cookie, body }));
+
+  beforeEach(() => {
+    process.env.ANTHROPIC_API_KEY = 'test';
+    setFoodModel(async () => ok);
+  });
+
+  it('anahtar yoksa kapalı; durum uç noktası bunu bildirir', async () => {
+    delete process.env.ANTHROPIC_API_KEY;
+    const { cookie } = await signup();
+    expect((await send(cookie)).status).toBe(503);
+    expect((await (await auth.GET(req('/api/auth'))).json()).ai).toBe(false);
+  });
+
+  it('oturumsuz ve CSRF başlıksız istekler reddedilir', async () => {
+    expect((await send(undefined)).status).toBe(401);
+    const { cookie } = await signup();
+    const r = await foodPhoto.POST(
+      req('/api/food-photo', { method: 'POST', cookie, client: false, body: {} }),
+    );
+    expect(r.status).toBe(403);
+  });
+
+  it('geçersiz görsel reddedilir, model çağrılmaz', async () => {
+    let called = false;
+    setFoodModel(async () => ((called = true), ok));
+    const { cookie } = await signup();
+    expect((await send(cookie, { image: 'not base64!', mediaType: 'image/png' })).status).toBe(400);
+    expect((await send(cookie, { image: IMG, mediaType: 'image/gif' })).status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  it('model çıktısı temizlenir: listede olmayan eşleşme atılır, sayılar sınırlanır', async () => {
+    const { cookie } = await signup();
+    const r = await send(cookie);
+    expect(r.status).toBe(200);
+    const body = await r.json();
+    expect(body.isFood).toBe(true);
+    expect(body.items[0]).toMatchObject({
+      name: 'Pirinç pilavı',
+      match: 'Pirinç pilavı (tereyağlı)',
+      grams: 180,
+    });
+    expect(body.items[1]).toMatchObject({ match: null, grams: 2000, per: { k: 0, p: 25 } });
+    expect(body.remaining).toBe(29);
+  });
+
+  it('günlük sınır aşılınca 429; başarısız analiz hak yemez', async () => {
+    const { cookie } = await signup();
+    setFoodModel(async () => ({ ok: false, reason: 'error' }));
+    expect((await send(cookie)).status).toBe(502);
+    setFoodModel(async () => ok);
+    let last: Response | null = null;
+    for (let i = 0; i < foodPhoto.DAILY_LIMIT; i++) last = await send(cookie);
+    expect(last!.status).toBe(200);
+    expect((await last!.json()).remaining).toBe(0);
+    const over = await send(cookie);
+    expect(over.status).toBe(429);
+    expect((await over.json()).error).toBe('daily_limit');
+  });
+
+  it('model reddederse 422', async () => {
+    setFoodModel(async () => ({ ok: false, reason: 'refused' }));
+    const { cookie } = await signup();
+    expect((await send(cookie)).status).toBe(422);
   });
 });
