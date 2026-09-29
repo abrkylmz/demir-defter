@@ -29,7 +29,7 @@ export function renderHistory(): string {
   const thisWeek = ds.filter(d => d >= ws && d <= addDays(ws, 6)).length;
   const thisMonth = ds.filter(d => d >= t.slice(0, 8) + '01').length;
 
-  let html = `<div class="dayline"><h1>Geçmiş</h1><p>${ds.length} antrenman</p></div>
+  let html = `<div class="dayline"><h1>Geçmiş</h1><p>${ds.length} antrenman <button class="textbtn" data-tab="report" style="margin-left:4px">Rapor ›</button></p></div>
   <div class="summary"><div><b class="num">${thisWeek}</b><span>bu hafta</span></div><div><b class="num">${thisMonth}</b><span>bu ay</span></div><div><b class="num">${weekStreak(ds, ws)}</b><span>hafta üst üste</span></div></div>
   ${muscleCard(ws)}`;
 

@@ -3,6 +3,7 @@ import { dayTotals } from '../domain/nutrition.ts';
 import { weekProgress, type WeekProgress } from '../domain/weekly.ts';
 import { loggedNames, sortedDates } from '../domain/workout.ts';
 import { greeting } from '../lib/greeting.ts';
+import { reportTeaser } from './report.ts';
 import { dayMonth, longDate, mondayOf, todayStr } from '../lib/date.ts';
 import { esc } from '../lib/dom.ts';
 import { fmt } from '../lib/format.ts';
@@ -85,6 +86,7 @@ export function renderHome(): string {
   const bodyTxt = w !== null ? `Son tartı ${fmt(w, 1)} kg` : 'Tartılarını kaydet';
 
   return `${hero(t)}
+  <button class="report-link" data-tab="report"><span><b>Haftalık rapor</b><span>${esc(reportTeaser())}</span></span><span class="go" aria-hidden="true">›</span></button>
   <div class="tiles">
     <button class="tile wide" style="--c:var(--blue)" data-tab="log" data-home="today">${tileIcon('log')}<div><h2>Antrenman</h2><p>${logTxt}</p></div><span class="go" aria-hidden="true">›</span></button>
     <button class="tile wide" style="--c:var(--orange)" data-tab="food" data-home="today">${tileIcon('food', 40)}<div><h2>Beslenme</h2><p>${foodTxt}</p></div><span class="go" aria-hidden="true">›</span></button>

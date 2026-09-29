@@ -12,6 +12,7 @@ import { continueAsGuest, submitAuthForm } from './services/account.ts';
 import { exportCsv } from './services/export.ts';
 import { promptInstall } from './services/install.ts';
 import { persistFood, persistSession } from './services/persist.ts';
+import { nextAnchor, previousAnchor } from './domain/report.ts';
 import { openBodySheet } from './sheets/body-weight.ts';
 import { openDataSheet, openInstallHelp } from './sheets/data.ts';
 import { openExerciseMenu } from './sheets/exercise-menu.ts';
@@ -36,7 +37,7 @@ function goToDate(d: DateStr): void {
   ui.weekStart = mondayOf(d);
 }
 
-const ACTIONS: Record<string, (el: HTMLElement) => void> = {
+const ACTIONS: Record<string, (el: HTMLElement, ev: MouseEvent) => void> = {
   // antrenman
   pick: () => openPicker(),
   addset: b => openSetSheet(num(b, 'ex')),
@@ -81,6 +82,37 @@ const ACTIONS: Record<string, (el: HTMLElement) => void> = {
     document.querySelector<HTMLInputElement>('#authForm input')?.focus();
   },
   guest: () => continueAsGuest(),
+
+  // rapor
+  rperiod: b => {
+    ui.reportPeriod = data(b, 'v') === 'month' ? 'month' : 'week';
+    ui.reportSel = null;
+    render();
+  },
+  rnav: b => {
+    const dir = num(b, 'dir');
+    ui.reportAnchor =
+      dir === 0
+        ? todayStr()
+        : dir < 0
+          ? previousAnchor(ui.reportPeriod, ui.reportAnchor)
+          : nextAnchor(ui.reportPeriod, ui.reportAnchor);
+    ui.reportSel = null;
+    render();
+  },
+  rchart: (svg, ev) => {
+    // Dokunulan x konumuna en yakın gün: dar sütunlarda da rahat seçilir
+    const box = svg.getBoundingClientRect();
+    const vbW = (svg as unknown as SVGSVGElement).viewBox.baseVal.width;
+    const x = ((ev.clientX - box.left) / box.width) * vbW;
+    const n = num(svg, 'n');
+    const pl = num(svg, 'pl');
+    const pr = num(svg, 'pr');
+    const i = Math.floor(((x - pl) / (vbW - pl - pr)) * n);
+    const next = Math.max(0, Math.min(n - 1, i));
+    ui.reportSel = ui.reportSel === next ? null : next;
+    render();
+  },
 
   // gezinme
   week: b => {
@@ -173,7 +205,7 @@ function onClick(e: MouseEvent): void {
   const el = closest(e.target, '[data-act],[data-date]');
   if (!el) return;
   const act = el.dataset.act;
-  if (act) ACTIONS[act]?.(el);
+  if (act) ACTIONS[act]?.(el, e);
   else selectDay(data(el, 'date'));
 }
 

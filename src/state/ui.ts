@@ -1,7 +1,7 @@
 import { mondayOf, todayStr } from '../lib/date.ts';
 import type { DateStr, Tab } from '../types.ts';
 
-export const TABS: readonly Tab[] = ['home', 'log', 'food', 'history', 'progress', 'body'];
+export const TABS: readonly Tab[] = ['home', 'log', 'food', 'history', 'progress', 'body', 'report'];
 export const isTab = (v: unknown): v is Tab => TABS.includes(v as Tab);
 
 interface UiState {
@@ -15,6 +15,10 @@ interface UiState {
   /** İlerleme ekranı: hareket grafiği ya da rekorlar listesi */
   progressView: 'chart' | 'records';
   sheetOpen: boolean;
+  /** Rapor: dönem türü, dönemin herhangi bir günü ve grafikte seçili gün (sıra) */
+  reportPeriod: 'week' | 'month';
+  reportAnchor: DateStr;
+  reportSel: number | null;
   /** Giriş ekranı açıkken hangi form; null ise uygulama görünür */
   authMode: 'signin' | 'signup' | 'reset' | 'sent' | 'newpass' | null;
   /** Giriş ekranında gösterilen bilgi metni (ör. onay e-postası gönderildi) */
@@ -38,6 +42,9 @@ export const ui: UiState = {
   progressView: 'chart',
   /** Alt panel açıkken o günün bulut güncellemeleri bekletilir. */
   sheetOpen: false,
+  reportPeriod: 'week',
+  reportAnchor: todayStr(),
+  reportSel: null,
   authMode: null,
   authInfo: '',
 };

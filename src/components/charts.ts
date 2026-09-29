@@ -132,3 +132,72 @@ export function bodyChart(pts: Point[]): string {
    ${dots}
    ${xLabels(pts[0].date, pts[pts.length - 1].date, pad.pl, pad.pr)}</svg>`;
 }
+
+export interface KcalDay {
+  date: DateStr;
+  k: number | null;
+}
+
+/**
+ * Günlük kalori sütunları + hedef çizgisi (tek seri, lejantsız; başlık seriyi adlandırır).
+ * Tüm grafik tek dokunma alanıdır: dokunulan noktaya en yakın gün seçilir (`data-act="rchart"`).
+ * @param sel seçili günün sırası; seçiliyken diğer sütunlar soluklaşır
+ */
+export function kcalColumns(
+  days: KcalDay[],
+  goal: number | null,
+  labels: string[],
+  sel: number | null,
+): string {
+  // Telefon genişliğine yakın çizim alanı: eksen yazıları gerçek boyutunda görünür
+  const W = 360;
+  const H = 200;
+  const pl = 40;
+  const pr = 8;
+  const pt = 18;
+  const pb = 24;
+  const plotW = W - pl - pr;
+  const plotH = H - pt - pb;
+  const vals = days.map(d => d.k ?? 0);
+  const rawMax = Math.max(goal ?? 0, ...vals, 1) * 1.1;
+  const step = rawMax > 3000 ? 1000 : 500;
+  const max = Math.ceil(rawMax / step) * step;
+  const Y = (v: number) => pt + (1 - v / max) * plotH;
+  const slot = plotW / days.length;
+  const barW = Math.min(24, Math.max(2, slot - 2));
+
+  let grid = '';
+  for (let v = 0; v <= max; v += step)
+    grid += `<line x1="${pl}" x2="${W - pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${pl - 8}" y="${Y(v) + 4}" text-anchor="end" ${AXIS_FONT}>${fmt(v, 0)}</text>`;
+
+  const bars = days
+    .map((d, i) => {
+      if (d.k === null || d.k <= 0) return '';
+      const x = pl + slot * i + (slot - barW) / 2;
+      const y = Y(d.k);
+      const h = H - pb - y;
+      const r = Math.min(4, barW / 2, h);
+      // Üst köşeler yuvarlak, taban düz
+      const path = `M${x},${H - pb}V${y + r}Q${x},${y} ${x + r},${y}H${x + barW - r}Q${x + barW},${y} ${x + barW},${y + r}V${H - pb}Z`;
+      const dim = sel !== null && sel !== i ? ' fill-opacity=".35"' : '';
+      return `<path d="${path}" fill="var(--orange)"${dim}/>`;
+    })
+    .join('');
+
+  const xl = labels
+    .map((l, i) =>
+      l
+        ? `<text x="${pl + slot * i + slot / 2}" y="${H - 8}" text-anchor="middle" ${AXIS_FONT}>${esc(l)}</text>`
+        : '',
+    )
+    .join('');
+
+  const goalLine =
+    goal && goal > 0
+      ? `<line x1="${pl}" x2="${W - pr}" y1="${Y(goal)}" y2="${Y(goal)}" stroke="var(--ink-2)" stroke-width="1.5"/>
+         <text x="${W - pr}" y="${Y(goal) - 6}" text-anchor="end" font-size="12" font-weight="600" fill="var(--ink-2)" font-family="Barlow, sans-serif">Hedef ${fmt(goal, 0)}</text>`
+      : '';
+
+  const logged = days.filter(d => d.k !== null).length;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" data-act="rchart" data-n="${days.length}" data-pl="${pl}" data-pr="${pr}" aria-label="Günlük kalori grafiği, ${logged} gün kayıtlı${goal ? `, hedef ${fmt(goal, 0)} kcal` : ''}. Değerler aşağıdaki tabloda.">${grid}${bars}${goalLine}${xl}</svg>`;
+}

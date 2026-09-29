@@ -53,6 +53,7 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 - Hesapsız mod: `localStorage` (Vercel dahil). Cihazlar arası senkron yok.
 - claude.ai artifact'ı olarak çalışırken `window.claude.use('db' | 'user' | 'downloads')` ile bulut kullanılır. Belgeler: `s-<tarih>`, `f-<tarih>`, `body`, `settings` (custom + templates + profile), `nutrition`.
 - `store.profile = {name?, weeklyGoal?}`: ana ekran selamlaması (`lib/greeting.ts`) ve haftalık hedef (`domain/weekly.ts`).
+- Rapor: hesaplar `domain/report.ts` (`buildReport(period, anchor)`, saf; `tests/report.test.ts`), ekran `views/report.ts` (sekme `report`, alt çubukta Geçmiş seçili görünür), grafik `kcalColumns` (360 birimlik çizim alanı ki eksen yazıları telefonda okunur; dokunulan x'e en yakın gün seçilir). Değişimler nötr metin + ▲▼; iyi/kötü yargısı "Öne çıkanlar"da kelimelerle (yeşil/kırmızı/turuncu renk körlüğünde ayırt edilemiyor, renge anlam yükleme). Her grafiğin tablo görünümü olmalı.
 - Akıllı öneri `domain/suggest.ts` (çift progresyon), rekorlar `domain/records.ts`. Kurallarını değiştirirsen `tests/features.test.ts`'i güncelle.
 - Buluttan gelen veriler dondurulmuş nesnelerdir; her zaman `clone()` ile kopyala.
 - Alt panel açıkken o günün bulut güncellemeleri bekletilir (`ui.sheetOpen` kontrolü); bu korumayı kaldırma.

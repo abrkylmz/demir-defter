@@ -9,6 +9,7 @@ import { renderHistory } from './history.ts';
 import { renderHome } from './home.ts';
 import { renderLog } from './log.ts';
 import { renderProgress } from './progress.ts';
+import { renderReport } from './report.ts';
 
 const VIEWS: Record<Tab, () => string> = {
   home: renderHome,
@@ -16,6 +17,7 @@ const VIEWS: Record<Tab, () => string> = {
   food: renderFood,
   history: renderHistory,
   progress: renderProgress,
+  report: renderReport,
   body: renderBody,
 };
 
@@ -29,7 +31,11 @@ export function render(): void {
     return;
   }
   qa(document, 'nav.tabs button').forEach(b =>
-    b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'),
+    // Rapor, Geçmiş'in altında sayılır
+    b.setAttribute(
+      'aria-current',
+      b.dataset.tab === (ui.tab === 'report' ? 'history' : ui.tab) ? 'page' : 'false',
+    ),
   );
   const home = ui.tab === 'home';
   document.body.classList.toggle('home', home);
