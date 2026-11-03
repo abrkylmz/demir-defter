@@ -37,6 +37,7 @@ beforeEach(() => {
           },
         ],
         water: 4,
+        supp: { creatine: 1, protein: 2 },
       },
     },
     foodCustom: [],
@@ -101,6 +102,25 @@ describe('yedek', () => {
     expect(r.data.body).toEqual({ '2026-09-28': 79 });
     expect(r.data.food['2026-09-27'].items[0].meal).toBe('ara');
     expect(r.data.goals).toBeNull();
+  });
+
+  it('takviye alanını temizler; yalnızca takviyeli gün de korunur', () => {
+    const r = ok(
+      JSON.stringify({
+        app: 'demir-defter',
+        version: 1,
+        data: {
+          food: {
+            '2026-09-27': { items: [], water: 0, supp: { creatine: 1, protein: 99, kafein: 3 } },
+            '2026-09-28': { items: [], water: 0, supp: { creatine: -1, protein: 'iki' } },
+            '2026-09-29': { items: [], water: 0, supp: [1, 2] },
+          },
+        },
+      }),
+    );
+    expect(r.data.food).toEqual({
+      '2026-09-27': { items: [], water: 0, supp: { creatine: 1, protein: 6 } },
+    });
   });
 
   it('geri yükleme mevcut verilerin yerine geçer', () => {

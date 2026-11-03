@@ -1,9 +1,11 @@
 import { weekHead } from '../components/week-nav.ts';
 import { MEALS } from '../data/foods.ts';
 import { dayTotals, itemVals, kcalStatus, recentAverage } from '../domain/nutrition.ts';
+import { hasAnySupp, SUPPS, suppCount, suppStats } from '../domain/supplements.ts';
 import {
   addDays,
   DAY_NAMES,
+  daysAgoText,
   longDate,
   parseYmd,
   relativeDayTitle,
@@ -15,7 +17,7 @@ import { fmt } from '../lib/format.ts';
 import { store } from '../state/store.ts';
 import { ui } from '../state/ui.ts';
 import { chevronDown, plus } from '../ui/icons.ts';
-import type { DateStr, FoodDay, Goals, Macros } from '../types.ts';
+import type { DateStr, FoodDay, Goals, Macros, SuppKey } from '../types.ts';
 
 const GLASS_L = 0.25;
 const DEFAULT_WATER_GLASSES = 10;
@@ -92,6 +94,39 @@ function waterCard(d: FoodDay | undefined, g: Goals | null): string {
   return `<div class="water"><div class="wt"><span>Su</span><span class="num"><b>${fmt(w * GLASS_L, 2)}</b> / ${fmt(goal * GLASS_L, 2)} L</span></div><div class="glasses">${glasses}</div></div>`;
 }
 
+/** "Son 7 günde 5 gün · son 30 günde 22 gün · 4 gündür aralıksız" */
+function suppStatsText(key: SuppKey): string {
+  const s = suppStats(key);
+  if (!s.last) return 'Henüz kayıt yok';
+  if (!s.month) return `Son alım ${daysAgoText(s.last)}`;
+  return `Son 7 günde <b>${s.week}</b> gün · son 30 günde <b>${s.month}</b> gün${s.streak > 1 ? ` · ${s.streak} gündür aralıksız` : ''}`;
+}
+
+/** Bugün dahil son 7 gün; dolu nokta o gün alındı demek. */
+function suppDots(key: SuppKey): string {
+  const t = todayStr();
+  let out = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = addDays(t, -i);
+    const on = suppCount(d, key) > 0;
+    out += `<li class="${on ? 'on' : ''}"><i></i>${DAY_NAMES[(parseYmd(d).getDay() + 6) % 7]}</li>`;
+  }
+  return `<ol class="sdots" aria-hidden="true">${out}</ol>`;
+}
+
+/** Takviyeler: gün görünümünde adet sayaçlı, hafta görünümünde yalnızca sıklık özeti. */
+function suppCard(date: DateStr | null): string {
+  const rows = SUPPS.map(({ key, name, unit, max }) => {
+    const n = date ? suppCount(date, key) : 0;
+    const counter = date
+      ? `<div class="scount"><button class="sbtn" data-act="supp" data-k="${key}" data-step="-1" aria-label="${name} azalt"${n ? '' : ' disabled'}>−</button><span class="num"><b>${n}</b> ${unit}</span><button class="sbtn" data-act="supp" data-k="${key}" data-step="1" aria-label="${name} ekle"${n >= max ? ' disabled' : ''}>${plus(16)}</button></div>`
+      : '';
+    return `<div class="supp"><div class="shead"><b>${name}</b>${counter}</div>
+      <p class="sstat">${suppStatsText(key)}</p>${suppDots(key)}</div>`;
+  }).join('');
+  return `<section class="supps" aria-label="Takviyeler"><div class="wt"><span>Takviyeler</span></div>${rows}</section>`;
+}
+
 function mealCards(d: FoodDay | undefined): string {
   return MEALS.map(([k, label]) => {
     const items = (d ? d.items : []).map((it, i) => ({ it, i })).filter(x => x.it.meal === k);
@@ -120,7 +155,7 @@ function renderFoodDay(date: DateStr): string {
     weekStrip() +
     `
   <div class="dayline"><h1>${esc(relativeDayTitle(ui.date))}</h1><p>${trained ? 'Antrenman günü, ' : ''}${esc(weekdayLong(ui.date))} <button class="textbtn closeday" data-act="foodclose" style="margin-left:4px" aria-expanded="true">Kapat${chevronDown}</button></p></div><div class="fooddetail${ui.justOpened ? ' drop' : ''}">
-  ${summaryCard(dayTotals(ui.date), g)}${waterCard(d, g)}${mealCards(d)}${averageLine()}
+  ${summaryCard(dayTotals(ui.date), g)}${waterCard(d, g)}${suppCard(ui.date)}${mealCards(d)}${averageLine()}
   ${editGoalsLink(g)}</div>`
   );
 }
@@ -149,6 +184,7 @@ function renderFoodWeek(): string {
   ${goalInfo}
   ${averageLine()}
   <button class="openday" data-act="openday" data-d="${t}" aria-expanded="false">Bugünü aç${chevronDown}</button>
+  ${hasAnySupp() ? suppCard(null) : ''}
   ${editGoalsLink(g)}`
   );
 }

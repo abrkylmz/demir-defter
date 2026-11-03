@@ -5,7 +5,7 @@
  * custom      = [{name, group, bar}]                         kullanıcının eklediği hareketler
  * templates   = [{id, name, exercises:[{name, group, bar}]}] antrenman şablonları
  * body[YYYY-MM-DD] = kg
- * food[YYYY-MM-DD] = {items:[{id, name, meal, g, per:{k,p,c,f}, pl, pg}], water}
+ * food[YYYY-MM-DD] = {items:[{id, name, meal, g, per:{k,p,c,f}, pl, pg}], water, supp?:{creatine?, protein?}}
  * foodCustom  = [{name, k, p, c, f, pl, pg}]
  * goals       = {kcal, p, c, f, water, profile} | null
  */

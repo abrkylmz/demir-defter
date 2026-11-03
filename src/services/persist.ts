@@ -1,6 +1,7 @@
 // Değişiklikleri önce localStorage'a, bulut modundaysa kısa bir gecikmeyle buluta yazar.
 // Bulut belgeleri: s-<tarih> (antrenman), f-<tarih> (beslenme), body, settings, nutrition.
 // Yazılamayan belgeler (çevrimdışı) "kirli" olarak işaretlenir ve bağlantı gelince flushDirty ile gönderilir.
+import { foodHasContent } from '../domain/supplements.ts';
 import { saveLocal, store } from '../state/store.ts';
 import type { DateStr } from '../types.ts';
 import { clearDirty, dirtyIds, isCloud, writeDoc, writeNow } from './db.ts';
@@ -28,8 +29,9 @@ export function docPayload(id: string): object | null {
   if (id.startsWith('f-')) {
     const date = id.slice(2);
     const d = store.food[date];
-    const has = d && (d.items.length || d.water);
-    return has ? { kind: 'food', date, items: d.items, water: d.water || 0, updatedAt: Date.now() } : null;
+    return d && foodHasContent(d)
+      ? { kind: 'food', date, items: d.items, water: d.water || 0, supp: d.supp || {}, updatedAt: Date.now() }
+      : null;
   }
   if (id === 'body') return { kind: 'body', entries: store.body, updatedAt: Date.now() };
   if (id === 'settings')

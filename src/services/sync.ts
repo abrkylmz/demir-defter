@@ -1,5 +1,6 @@
 // claude.ai bulut senkronu: ilk yüklemede yerel ve bulut verilerini birleştirir, sonra canlı güncellemeleri dinler.
 // window.claude yoksa (yerel geliştirme, Vercel) hiçbir şey yapmaz ve uygulama localStorage ile çalışır.
+import { cleanSupp, foodHasContent } from '../domain/supplements.ts';
 import { $ } from '../lib/dom.ts';
 import { clone, nameKey, uid8 } from '../lib/format.ts';
 import {
@@ -46,6 +47,7 @@ interface RemoteDoc {
   note?: string;
   items?: FoodItem[];
   water?: number;
+  supp?: unknown;
   entries?: Record<DateStr, number>;
   custom?: ExerciseInfo[] & CustomFood[];
   templates?: Template[];
@@ -54,6 +56,11 @@ interface RemoteDoc {
 }
 
 const readDoc = (doc: CloudDoc): RemoteDoc | null => clone(doc.data() as RemoteDoc | null);
+
+function foodFromDoc(v: RemoteDoc): FoodDay {
+  const supp = cleanSupp(v.supp);
+  return { items: v.items || [], water: v.water || 0, ...(supp ? { supp } : {}) };
+}
 
 function sessionFromDoc(v: RemoteDoc, date: DateStr): Session {
   const s: Session = {
@@ -178,7 +185,7 @@ async function mergeInitial() {
       rProfile = v.profile || null;
     } else if (doc.id === 'body') body = v.entries || {};
     else if (doc.id === 'nutrition') nut = v;
-    else if (v.kind === 'food' && v.date) rFood[v.date] = { items: v.items || [], water: v.water || 0 };
+    else if (v.kind === 'food' && v.date) rFood[v.date] = foodFromDoc(v);
     else if (v.kind === 'session' && v.date) remote[v.date] = sessionFromDoc(v, v.date);
   }
   // persist* çağrıları buluta yazabilsin diye mod burada açılıyor
@@ -211,9 +218,7 @@ async function mergeInitial() {
   if (bodyChanged) persistBody();
 
   // Beslenme
-  const foodLocalOnly = Object.keys(store.food).filter(
-    k => !rFood[k] && (store.food[k].items.length || store.food[k].water),
-  );
+  const foodLocalOnly = Object.keys(store.food).filter(k => !rFood[k] && foodHasContent(store.food[k]));
   foodLocalOnly.forEach(k => (rFood[k] = store.food[k]));
   store.food = rFood;
   const rCustom: CustomFood[] = nut?.custom || [];
@@ -273,7 +278,7 @@ function applySnapshot(snapshot: CloudSnapshot): void {
           changed = true;
         }
       } else if (v && v.kind === 'food') {
-        store.food[date] = { items: v.items || [], water: v.water || 0 };
+        store.food[date] = foodFromDoc(v);
         changed = true;
       }
       return;

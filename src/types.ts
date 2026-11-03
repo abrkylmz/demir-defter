@@ -55,10 +55,16 @@ export interface FoodItem {
   pg: number;
 }
 
+export type SuppKey = 'creatine' | 'protein';
+
+/** Günün takviyeleri: kreatin (doz) ve protein tozu (ölçek) adedi. */
+export type SuppDay = Partial<Record<SuppKey, number>>;
+
 export interface FoodDay {
   items: FoodItem[];
   /** bardak (250 ml) */
   water: number;
+  supp?: SuppDay;
 }
 
 export interface CustomFood extends Macros {

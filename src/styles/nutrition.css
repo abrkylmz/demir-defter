@@ -147,6 +147,97 @@
 .glass:hover {
   background: var(--surface-2);
 }
+.supps {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+.supp {
+  padding-top: 10px;
+}
+.supp + .supp {
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.shead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.shead > b {
+  font-size: 17px;
+}
+.scount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.scount .num {
+  min-width: 72px;
+  text-align: center;
+  font-size: 17px;
+  color: var(--ink-2);
+}
+.scount .num b {
+  font-family: var(--display);
+  font-size: 24px;
+  color: var(--ink);
+}
+.sbtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+.sbtn:disabled {
+  opacity: 0.4;
+}
+.sstat {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.sstat b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.sdots {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  max-width: 320px;
+}
+.sdots li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.sdots i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-3);
+}
+.sdots .on i {
+  background: var(--orange);
+  border-color: var(--orange);
+}
 .meal {
   background: var(--surface);
   border: 1px solid var(--line);

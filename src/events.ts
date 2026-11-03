@@ -4,6 +4,7 @@
 //   data-date → (data-act yoksa) gün seç
 // Alt panel içindeki tıklamalar panelin kendi dinleyicilerine bırakılır.
 import { foodDay } from './domain/nutrition.ts';
+import { SUPPS } from './domain/supplements.ts';
 import { session } from './domain/workout.ts';
 import { addDays, mondayOf, todayStr } from './lib/date.ts';
 import { closest, data, prefersReducedMotion } from './lib/dom.ts';
@@ -142,6 +143,19 @@ const ACTIONS: Record<string, (el: HTMLElement, ev: MouseEvent) => void> = {
     const n = num(b, 'n');
     // dolu son bardağa tekrar dokunmak onu boşaltır
     d.water = d.water === n ? n - 1 : n;
+    persistFood(ui.date);
+    render();
+  },
+  supp: b => {
+    const s = SUPPS.find(x => x.key === data(b, 'k'));
+    if (!s) return;
+    const d = foodDay(ui.date, true);
+    const supp = d.supp || {};
+    const n = Math.max(0, Math.min(s.max, (supp[s.key] || 0) + num(b, 'step')));
+    if (n) supp[s.key] = n;
+    else delete supp[s.key];
+    if (Object.keys(supp).length) d.supp = supp;
+    else delete d.supp;
     persistFood(ui.date);
     render();
   },

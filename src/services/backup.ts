@@ -2,6 +2,7 @@
 // Yedek dosyası dışarıdan geldiği için güvenilmez kabul edilir: her alan tip kontrolünden geçer,
 // HTML attribute'larına giren id'ler yeniden üretilir, bozuk kayıtlar atlanır.
 import { MEALS } from '../data/foods.ts';
+import { cleanSupp } from '../domain/supplements.ts';
 import { todayStr } from '../lib/date.ts';
 import { uid8 } from '../lib/format.ts';
 import { saveLocal, store } from '../state/store.ts';
@@ -127,7 +128,8 @@ function cleanFood(raw: unknown): Store['food'] {
         pg: nonNeg(it.pg),
       }));
     const water = Math.round(nonNeg(d.water));
-    if (items.length || water) out[date] = { items, water };
+    const supp = cleanSupp(d.supp);
+    if (items.length || water || supp) out[date] = { items, water, ...(supp ? { supp } : {}) };
   }
   return out;
 }

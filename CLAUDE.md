@@ -40,7 +40,7 @@ Spor salonu ve beslenme takip uygulaması. Mobil öncelikli web uygulaması. Ara
 - `sessions[YYYY-MM-DD] = {date, note?, exercises:[{id, name, group, bar, note?, sets:[{kg, reps}]}]}` (hareket notu sonraki antrenmanda "Son sefer" kutusunda görünür)
 - `custom = [{name, group, bar}]`, `templates = [{id, name, exercises:[{name, group, bar}]}]`
 - `body[YYYY-MM-DD] = kg`
-- `food[YYYY-MM-DD] = {items:[{id, name, meal, g, per:{k,p,c,f}, pl, pg}], water}` (`meal`: kahvalti | ogle | aksam | ara)
+- `food[YYYY-MM-DD] = {items:[{id, name, meal, g, per:{k,p,c,f}, pl, pg}], water, supp?}` (`meal`: kahvalti | ogle | aksam | ara; `supp = {creatine?, protein?}` günlük doz/ölçek adedi, sıklık hesapları `domain/supplements.ts`)
 - `foodCustom = [{name, k, p, c, f, pl, pg}]`, `goals = {kcal, p, c, f, water, profile}`
 - localStorage anahtarı `demirdefter.v1`. Şemayı değiştirirken mevcut kullanıcı verisini bozma.
 
