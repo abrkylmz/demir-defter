@@ -41,6 +41,7 @@ export default defineConfig({
           { name: 'Antrenman', short_name: 'Antrenman', url: '/?tab=log' },
           { name: 'Beslenme', short_name: 'Beslenme', url: '/?tab=food' },
           { name: 'Kilo', short_name: 'Kilo', url: '/?tab=body' },
+          { name: 'Kreatin', short_name: 'Kreatin', url: '/?tab=creatine' },
         ],
       },
       workbox: {

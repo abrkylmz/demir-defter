@@ -1,7 +1,16 @@
-import { mondayOf, todayStr } from '../lib/date.ts';
+import { mondayOf, monthStart, todayStr } from '../lib/date.ts';
 import type { DateStr, Tab } from '../types.ts';
 
-export const TABS: readonly Tab[] = ['home', 'log', 'food', 'history', 'progress', 'body', 'report'];
+export const TABS: readonly Tab[] = [
+  'home',
+  'log',
+  'food',
+  'history',
+  'progress',
+  'body',
+  'report',
+  'creatine',
+];
 export const isTab = (v: unknown): v is Tab => TABS.includes(v as Tab);
 
 interface UiState {
@@ -19,6 +28,8 @@ interface UiState {
   reportPeriod: 'week' | 'month';
   reportAnchor: DateStr;
   reportSel: number | null;
+  /** Kreatin takviminde gösterilen ayın ilk günü */
+  crMonth: DateStr;
   /** Giriş ekranı açıkken hangi form; null ise uygulama görünür */
   authMode: 'signin' | 'signup' | 'reset' | 'sent' | 'newpass' | null;
   /** Giriş ekranında gösterilen bilgi metni (ör. onay e-postası gönderildi) */
@@ -45,6 +56,7 @@ export const ui: UiState = {
   reportPeriod: 'week',
   reportAnchor: todayStr(),
   reportSel: null,
+  crMonth: monthStart(todayStr()),
   authMode: null,
   authInfo: '',
 };

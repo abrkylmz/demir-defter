@@ -1,5 +1,6 @@
 import { latestWeight } from '../domain/body.ts';
 import { dayTotals } from '../domain/nutrition.ts';
+import { suppCount, suppStats } from '../domain/supplements.ts';
 import { weekProgress, type WeekProgress } from '../domain/weekly.ts';
 import { loggedNames, sortedDates } from '../domain/workout.ts';
 import { greeting } from '../lib/greeting.ts';
@@ -12,6 +13,14 @@ import { isEmpty, summarize } from '../services/backup.ts';
 import { canOfferInstall } from '../services/install.ts';
 import { backupStatus } from '../sheets/data.ts';
 import { tileIcon, utilIcon } from '../ui/icons.ts';
+
+function creatineTxt(): string {
+  if (suppCount(todayStr(), 'creatine')) {
+    const { streak } = suppStats('creatine');
+    return streak > 1 ? `Bugün alındı, ${streak} gündür aralıksız` : 'Bugün alındı';
+  }
+  return suppStats('creatine').last ? 'Bugün henüz işaretlenmedi' : 'Günlük kullanımını işaretle';
+}
 
 /** Haftalık hedef halkası (kahraman kartında). */
 function goalRing(done: number, goal: number): string {
@@ -92,7 +101,8 @@ export function renderHome(): string {
     <button class="tile wide" style="--c:var(--orange)" data-tab="food" data-home="today">${tileIcon('food', 40)}<div><h2>Beslenme</h2><p>${foodTxt}</p></div><span class="go" aria-hidden="true">›</span></button>
     <button class="tile" style="--c:var(--yellow)" data-tab="history">${tileIcon('history')}<div><h2>Geçmiş</h2><p>${histTxt}</p></div></button>
     <button class="tile" style="--c:var(--green)" data-tab="progress">${tileIcon('progress')}<div><h2>İlerleme</h2><p>${progTxt}</p></div></button>
-    <button class="tile wide" style="--c:var(--red)" data-tab="body">${tileIcon('body')}<div><h2>Kilo</h2><p>${bodyTxt}</p></div><span class="go" aria-hidden="true">›</span></button>
+    <button class="tile" style="--c:var(--red)" data-tab="body">${tileIcon('body')}<div><h2>Kilo</h2><p>${bodyTxt}</p></div></button>
+    <button class="tile" style="--c:var(--pr)" data-tab="creatine">${tileIcon('creatine')}<div><h2>Kreatin</h2><p>${creatineTxt()}</p></div></button>
   </div>
   ${utilityLinks()}`;
 }

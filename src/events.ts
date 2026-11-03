@@ -4,9 +4,9 @@
 //   data-date → (data-act yoksa) gün seç
 // Alt panel içindeki tıklamalar panelin kendi dinleyicilerine bırakılır.
 import { foodDay } from './domain/nutrition.ts';
-import { SUPPS } from './domain/supplements.ts';
+import { setSupp, SUPPS, suppCount } from './domain/supplements.ts';
 import { session } from './domain/workout.ts';
-import { addDays, mondayOf, todayStr } from './lib/date.ts';
+import { addDays, addMonths, mondayOf, todayStr } from './lib/date.ts';
 import { closest, data, prefersReducedMotion } from './lib/dom.ts';
 import { fmt } from './lib/format.ts';
 import { continueAsGuest, submitAuthForm } from './services/account.ts';
@@ -149,14 +149,21 @@ const ACTIONS: Record<string, (el: HTMLElement, ev: MouseEvent) => void> = {
   supp: b => {
     const s = SUPPS.find(x => x.key === data(b, 'k'));
     if (!s) return;
-    const d = foodDay(ui.date, true);
-    const supp = d.supp || {};
-    const n = Math.max(0, Math.min(s.max, (supp[s.key] || 0) + num(b, 'step')));
-    if (n) supp[s.key] = n;
-    else delete supp[s.key];
-    if (Object.keys(supp).length) d.supp = supp;
-    else delete d.supp;
+    setSupp(ui.date, s.key, suppCount(ui.date, s.key) + num(b, 'step'));
     persistFood(ui.date);
+    render();
+  },
+
+  // kreatin sekmesi
+  crtoggle: b => {
+    const d = data(b, 'd');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || d > todayStr()) return;
+    setSupp(d, 'creatine', suppCount(d, 'creatine') ? 0 : 1);
+    persistFood(d);
+    render();
+  },
+  crmonth: b => {
+    ui.crMonth = addMonths(ui.crMonth, num(b, 'dir'));
     render();
   },
   foodclose: () => {

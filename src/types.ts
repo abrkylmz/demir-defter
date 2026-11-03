@@ -118,4 +118,4 @@ export interface Store {
   profile: Profile;
 }
 
-export type Tab = 'home' | 'log' | 'food' | 'history' | 'progress' | 'body' | 'report';
+export type Tab = 'home' | 'log' | 'food' | 'history' | 'progress' | 'body' | 'report' | 'creatine';

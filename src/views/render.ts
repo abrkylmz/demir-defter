@@ -4,6 +4,7 @@ import { ui } from '../state/ui.ts';
 import { isCloud } from '../services/db.ts';
 import { renderAuth } from './auth.ts';
 import { renderBody } from './body.ts';
+import { renderCreatine } from './creatine.ts';
 import { renderFood } from './food.ts';
 import { renderHistory } from './history.ts';
 import { renderHome } from './home.ts';
@@ -19,6 +20,7 @@ const VIEWS: Record<Tab, () => string> = {
   progress: renderProgress,
   report: renderReport,
   body: renderBody,
+  creatine: renderCreatine,
 };
 
 /** Aktif sekmeyi baştan çizer. Durum değiştiren her işlemden sonra çağrılır. */

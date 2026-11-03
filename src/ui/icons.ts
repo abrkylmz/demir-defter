@@ -13,7 +13,7 @@ export const chevronDown =
 export const chevronToggle =
   '<svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>';
 
-export type TileIcon = 'log' | 'food' | 'history' | 'progress' | 'body';
+export type TileIcon = 'log' | 'food' | 'history' | 'progress' | 'body' | 'creatine';
 export type UtilIcon = 'install' | 'backup';
 
 export const plus = (size = 18) =>
@@ -57,7 +57,15 @@ const ICON_PATHS: Record<TileIcon, [string, boolean]> = {
     '<rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8.5 9.5a5 5 0 0 1 7 0"/><path d="M12 11.5l1.5-2.5"/>',
     true,
   ],
+  creatine: [
+    '<rect x="2.5" y="8.25" width="19" height="7.5" rx="3.75" transform="rotate(-45 12 12)"/><path d="M9.3 9.3l5.4 5.4"/>',
+    true,
+  ],
 };
+
+/** Onay işareti (kreatin takvimi ve "bugün alındı" düğmesi). */
+export const check = (size = 18) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>`;
 
 const UTIL_PATHS: Record<UtilIcon, string> = {
   install: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3M10 18.5h4"/>',

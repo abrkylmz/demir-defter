@@ -1,6 +1,7 @@
 // Takviye takibi: kreatin ve protein tozu. Günlük adetler beslenme günü belgesinde (food[tarih].supp) tutulur.
 import { addDays, todayStr } from '../lib/date.ts';
 import { store } from '../state/store.ts';
+import { foodDay } from './nutrition.ts';
 import type { DateStr, FoodDay, SuppDay, SuppKey } from '../types.ts';
 
 export const SUPPS: { key: SuppKey; name: string; unit: string; max: number }[] = [
@@ -58,6 +59,22 @@ export function suppStats(key: SuppKey, today: DateStr = todayStr()): SuppStats 
       .pop() ?? null;
   return { week, month, streak, last };
 }
+
+/** Günün takviye adedini ayarlar (0 ise alan silinir). Kaydetmek çağıranın işi. */
+export function setSupp(date: DateStr, key: SuppKey, n: number): void {
+  const max = SUPPS.find(s => s.key === key)?.max ?? 1;
+  const d = foodDay(date, true);
+  const supp = d.supp || {};
+  const v = Math.max(0, Math.min(max, Math.round(n)));
+  if (v) supp[key] = v;
+  else delete supp[key];
+  if (Object.keys(supp).length) d.supp = supp;
+  else delete d.supp;
+}
+
+/** Ayın (YYYY-MM) kaç gününde alındı. */
+export const monthCount = (key: SuppKey, month: string): number =>
+  Object.keys(store.food).filter(d => d.startsWith(month) && suppCount(d, key) > 0).length;
 
 /** Herhangi bir gün takviye kaydı var mı (hafta görünümünde özet gösterilsin mi). */
 export const hasAnySupp = (): boolean =>

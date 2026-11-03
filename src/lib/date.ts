@@ -26,6 +26,15 @@ export const mondayOf = (s: DateStr): DateStr => {
   return ymd(d);
 };
 
+/** Ayın ilk günü. */
+export const monthStart = (s: DateStr): DateStr => s.slice(0, 8) + '01';
+
+/** n ay sonrasının ilk günü. */
+export const addMonths = (s: DateStr, n: number): DateStr => {
+  const d = parseYmd(s);
+  return ymd(new Date(d.getFullYear(), d.getMonth() + n, 1));
+};
+
 export const DAY_NAMES = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 
 const tr = (s: DateStr, opts: Intl.DateTimeFormatOptions) => parseYmd(s).toLocaleDateString('tr-TR', opts);

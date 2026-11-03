@@ -1,0 +1,94 @@
+/* Kreatin sekmesi */
+.crtoday {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 16px;
+  margin: 6px 0 12px;
+}
+.crtoday > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.crtoday b {
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+.crtoday > span:last-child > span {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.crmark {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--ink-3);
+  display: grid;
+  place-items: center;
+  color: var(--on-status);
+}
+.crtoday.on .crmark {
+  background: var(--green);
+  border-color: var(--green);
+}
+.crtoday:active {
+  transform: scale(0.985);
+}
+.crcal {
+  margin-top: 16px;
+}
+.crgrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.crnames span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+  padding-bottom: 2px;
+}
+.crday {
+  min-height: 46px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0;
+  color: var(--ink);
+}
+.crday .num {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.crday.today {
+  border-color: var(--ink-2);
+  border-width: 2px;
+}
+.crday.on {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--on-status);
+}
+.crday:disabled {
+  background: transparent;
+  color: var(--ink-3);
+  border-style: dashed;
+}
